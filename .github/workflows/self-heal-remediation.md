@@ -155,19 +155,6 @@ steps:
       fetch-depth: 0
       persist-credentials: false
 
-  - name: Write remediation context file for the agent prompt
-    if: steps.guards.outputs.decision == 'allow'
-    run: |
-      mkdir -p .evidence
-      cat > .evidence/remediation-context.md <<EOF
-      - Original pull request: #${{ steps.guards.outputs.pr_number }}
-      - Head branch (developer's branch, the pull request base for your fix): ${{ steps.guards.outputs.head_branch }}
-      - Base branch of the original pull request: ${{ steps.guards.outputs.base_branch }}
-      - Failing commit short SHA: ${{ steps.guards.outputs.short_sha }}
-      - Suggested remediation branch name: self-heal/${{ steps.guards.outputs.short_sha }}-<category>
-      EOF
-      cat .evidence/remediation-context.md
-
   - name: Install build dependencies
     if: steps.guards.outputs.decision == 'allow'
     run: |
@@ -185,6 +172,21 @@ steps:
       gh run download ${{ github.event.workflow_run.id }} \
         --repo "${{ github.repository }}" --name self-heal-evidence --dir .evidence
       test -f .evidence/evidence.json
+
+  - name: Write remediation context file for the agent prompt
+    # Deliberately runs *after* evidence download, which does
+    # `rm -rf .evidence` before unpacking the downloaded artifact --
+    # writing this file any earlier would have it silently wiped out.
+    if: steps.guards.outputs.decision == 'allow'
+    run: |
+      cat > .evidence/remediation-context.md <<EOF
+      - Original pull request: #${{ steps.guards.outputs.pr_number }}
+      - Head branch (developer's branch, the pull request base for your fix): ${{ steps.guards.outputs.head_branch }}
+      - Base branch of the original pull request: ${{ steps.guards.outputs.base_branch }}
+      - Failing commit short SHA: ${{ steps.guards.outputs.short_sha }}
+      - Suggested remediation branch name: self-heal/${{ steps.guards.outputs.short_sha }}-<category>
+      EOF
+      cat .evidence/remediation-context.md
 
   - name: Verify evidence provenance against the live PR (anti-tamper)
     id: verify
@@ -317,7 +319,7 @@ steps:
       python3 -c "
       import json
       body = open('.evidence/diagnosis-comment.md').read()
-      print(json.dumps({'type': 'add_comment', 'issue_number': ${{ steps.guards.outputs.pr_number }}, 'body': body}))
+      print(json.dumps({'type': 'add_comment', 'item_number': ${{ steps.guards.outputs.pr_number }}, 'body': body}))
       " >> "$GH_AW_SAFE_OUTPUTS"
 
   - name: Show evidence, classification, and policy decision
