@@ -23,11 +23,36 @@ def _run(cmd, cwd):
     return result.stdout
 
 
+def _resolve_pristine_main_ref(cwd):
+    """Resolve a ref pointing at the pristine `main` tip to apply/reset
+    fixtures against, deliberately *not* `HEAD`: on a developer PR
+    branch (including the repo's own `demo-pr-*` fixture commits) HEAD
+    may already carry one of the fixtures' exact changes, so
+    re-applying the same patch on top of it would fail even though
+    fixtures themselves are fine. A local `main` branch exists in
+    ordinary developer clones and on push-to-main CI runs; CI
+    `pull_request` runs check out a detached PR ref with no local
+    `main` branch, but this workflow's own "Measure coverage" step
+    always fetches `origin/<base-ref| main>` earlier in the job, so
+    `origin/main` is available as a fallback by the time this test
+    runs.
+    """
+    for ref in ("main", "origin/main"):
+        result = subprocess.run(
+            ["git", "rev-parse", "--verify", "--quiet", ref],
+            cwd=cwd, capture_output=True, text=True,
+        )
+        if result.returncode == 0:
+            return ref
+    raise AssertionError("could not resolve a 'main' or 'origin/main' ref to build the fixture test worktree from")
+
+
 class FixtureApplyResetTests(unittest.TestCase):
     def setUp(self):
         self._tmpdir = tempfile.TemporaryDirectory()
         self.worktree = Path(self._tmpdir.name) / "worktree"
-        _run(["git", "worktree", "add", "--detach", str(self.worktree), "main"], cwd=REPO_ROOT)
+        main_ref = _resolve_pristine_main_ref(REPO_ROOT)
+        _run(["git", "worktree", "add", "--detach", str(self.worktree), main_ref], cwd=REPO_ROOT)
 
     def tearDown(self):
         _run(["git", "worktree", "remove", "--force", str(self.worktree)], cwd=REPO_ROOT)
