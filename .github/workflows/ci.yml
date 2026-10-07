@@ -1,0 +1,75 @@
+name: CI
+
+# Deterministic build/test/coverage/benchmark pipeline. This workflow
+# contains no AI calls and no network access beyond the standard GitHub
+# Actions runner image + apt packages. It is the same pipeline a human
+# contributor's pull request is held to, and it is also what every
+# self-heal remediation is ultimately re-validated against: if a
+# remediation doesn't make the tests pass / coverage sufficient /
+# benchmark fast again, this workflow fails and the PR cannot merge.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: Build, test, coverage, benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ gcovr lcov
+
+      - name: Configure (with coverage instrumentation)
+        run: cmake -S . -B build -DENABLE_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build
+        run: cmake --build build -j 4
+
+      - name: Run unit tests
+        run: ctest --test-dir build --output-on-failure -E performance_policy
+
+      - name: Measure coverage
+        run: |
+          python3 scripts/measure_coverage.py --build-dir build --threshold 95 \
+            --output build/coverage.json
+          cat build/coverage.json
+
+      - name: Run performance benchmark
+        run: ./build/performance_check
+
+      - name: Run automation test suite
+        run: python3 tests/automation/run_all.py
+
+      - name: Scan for secrets / internal references (public-repo hygiene)
+        run: python3 scripts/check_public_repo.py
+
+  policy-guard:
+    name: Universal forbidden-path / diff-size guard
+    runs-on: ubuntu-latest
+    # Only meaningful for pull requests, where there is a base ref to
+    # diff against. Runs independently of build-test so a forbidden-path
+    # violation is reported even if the build itself happens to pass.
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Check globally forbidden paths were not touched
+        run: |
+          python3 scripts/check_global_forbidden_paths.py \
+            --base-ref "origin/${{ github.event.pull_request.base.ref }}"
