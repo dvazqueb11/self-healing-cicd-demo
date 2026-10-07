@@ -7,6 +7,9 @@
 namespace job_processor {
 
 double calculate_average(const std::vector<double>& values) {
+    if (values.empty()) {
+        return 0.0;
+    }
     double sum = 0.0;
     for (double v : values) {
         sum += v;
