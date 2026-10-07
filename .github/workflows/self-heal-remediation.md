@@ -132,6 +132,13 @@ steps:
 
   - name: Stop here if guards denied (no AI invocation, no evidence download)
     if: steps.guards.outputs.decision == 'deny'
+    env:
+      # gh-aw only auto-wires this env var into its own generated
+      # steps; a user-defined deterministic step writing directly to
+      # $GH_AW_SAFE_OUTPUTS must declare it itself or the shell's
+      # `set -u` (implied by gh-aw's strict mode) fails with
+      # "unbound variable".
+      GH_AW_SAFE_OUTPUTS: ${{ steps.set-runtime-paths.outputs.GH_AW_SAFE_OUTPUTS }}
     run: |
       {
         echo "### Self-heal remediation skipped before evidence download"
@@ -215,6 +222,8 @@ steps:
 
   - name: Stop here if evidence verification failed
     if: steps.guards.outputs.decision == 'allow' && steps.verify.outputs.decision == 'deny'
+    env:
+      GH_AW_SAFE_OUTPUTS: ${{ steps.set-runtime-paths.outputs.GH_AW_SAFE_OUTPUTS }}
     run: |
       {
         echo "### Self-heal remediation skipped: evidence verification failed"
@@ -234,6 +243,8 @@ steps:
   - name: Pre-check policy and skip the agent if denied
     id: policy
     if: steps.guards.outputs.decision == 'allow' && steps.verify.outputs.decision == 'allow'
+    env:
+      GH_AW_SAFE_OUTPUTS: ${{ steps.set-runtime-paths.outputs.GH_AW_SAFE_OUTPUTS }}
     run: |
       set -euo pipefail
       if python3 scripts/evaluate_policy.py \
@@ -258,6 +269,8 @@ steps:
 
   - name: Post diagnosis and plan to the original pull request
     if: steps.guards.outputs.decision == 'allow' && steps.verify.outputs.decision == 'allow' && steps.policy.outputs.decision == 'allow'
+    env:
+      GH_AW_SAFE_OUTPUTS: ${{ steps.set-runtime-paths.outputs.GH_AW_SAFE_OUTPUTS }}
     run: |
       set -euo pipefail
       python3 - <<'PYEOF' > .evidence/diagnosis-comment.md
