@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.invalid/self-healing-cicd-demo/evidence-schema-v1.json",
+  "title": "Self-Healing CI/CD Evidence Contract",
+  "description": "Normalized, machine-readable evidence produced by an event adapter / evidence collector and consumed by the deterministic classifier, policy engine, and remediation agent. See docs/evidence-contract.md for the full description.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "scenario",
+    "event_source",
+    "repository",
+    "branch",
+    "triggering_sha",
+    "workflow_run",
+    "changed_files",
+    "diff_file",
+    "failure_category",
+    "failed_command",
+    "failure_signature",
+    "concise_log_file",
+    "relevant_files",
+    "measurements",
+    "runtime_budget",
+    "attempt_number"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "scenario": {
+      "type": "string",
+      "enum": ["easy-unit-test", "medium-low-coverage", "advanced-performance"]
+    },
+    "event_source": {
+      "type": "string",
+      "description": "Identifier of the adapter that produced this evidence, e.g. 'unit-test-adapter'."
+    },
+    "repository": {
+      "type": "string",
+      "description": "owner/repo of the repository the event occurred in."
+    },
+    "branch": {
+      "type": "string",
+      "description": "The temporary demo branch the failure was observed on."
+    },
+    "triggering_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$"
+    },
+    "workflow_run": {
+      "type": "string",
+      "description": "Identifier or URL of the workflow run that generated this evidence."
+    },
+    "changed_files": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "diff_file": {
+      "type": "string",
+      "description": "Path to a normalized, size-limited diff file relative to the evidence directory."
+    },
+    "failure_category": {
+      "type": "string",
+      "enum": [
+        "unit-test-failure",
+        "coverage-gap",
+        "performance-regression",
+        "unsupported"
+      ]
+    },
+    "failed_command": {
+      "type": "string"
+    },
+    "failure_signature": {
+      "type": "string",
+      "description": "Stable, deterministic identifier used for classification and escalation de-duplication."
+    },
+    "concise_log_file": {
+      "type": "string",
+      "description": "Path to a normalized, size-limited log excerpt relative to the evidence directory. Full raw logs are never passed to the agent."
+    },
+    "relevant_files": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "The minimal set of files the remediation agent is permitted to inspect/modify, subject to policy."
+    },
+    "measurements": {
+      "type": "object",
+      "description": "Scenario-specific structured measurements (e.g. coverage percent, benchmark timings). Free-form but must be JSON-serializable and small.",
+      "additionalProperties": true
+    },
+    "runtime_budget": {
+      "type": "object",
+      "required": ["target_minutes"],
+      "properties": {
+        "target_minutes": { "type": "number" },
+        "elapsed_minutes": { "type": "number" }
+      }
+    },
+    "attempt_number": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "1 for the first and only permitted remediation attempt. The policy engine rejects attempt_number > 1."
+    }
+  },
+  "additionalProperties": false
+}
