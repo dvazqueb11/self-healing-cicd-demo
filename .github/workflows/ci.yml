@@ -90,6 +90,13 @@ jobs:
           name: self-heal-evidence
           path: .evidence/
           retention-days: 7
+          # .evidence/ is a dot-prefixed (hidden) directory, and
+          # actions/upload-artifact excludes hidden files/directories
+          # by default (since 2024-09) to avoid accidentally leaking
+          # dotfiles like .env -- without this, the artifact silently
+          # uploads zero files and the remediation workflow has
+          # nothing to download.
+          include-hidden-files: true
 
       - name: Run automation test suite
         run: python3 tests/automation/run_all.py
