@@ -16,7 +16,7 @@ help:
 	@echo "  apply-easy         Apply the easy-unit-test demo fixture"
 	@echo "  apply-medium       Apply the medium-low-coverage demo fixture"
 	@echo "  apply-advanced     Apply the advanced-performance demo fixture"
-	@echo "  reset              Revert any applied fixture and clear .evidence/"
+	@echo "  reset SCENARIO=<id>  Revert the named fixture and clear .evidence/"
 	@echo "  validate-easy      Run the unit-test-remediation validator profile"
 	@echo "  validate-medium    Run the coverage-remediation validator profile"
 	@echo "  validate-advanced  Run the performance-remediation validator profile"
@@ -55,8 +55,9 @@ apply-medium:
 apply-advanced:
 	python3 scripts/create_demo_failure.py advanced-performance
 
+# Usage: make reset SCENARIO=easy-unit-test
 reset:
-	python3 scripts/reset_demo.py
+	python3 scripts/reset_demo.py $(SCENARIO)
 
 validate-easy:
 	python3 scripts/validate_change.py --profile unit-test-remediation --scenario easy-unit-test --build-dir $(BUILD_DIR)
