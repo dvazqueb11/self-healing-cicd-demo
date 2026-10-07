@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -84,14 +85,20 @@ def configure_and_build(build_dir: Path, enable_coverage: bool):
         raise ValidationError(f"build failed:\n{build_result.stdout}\n{build_result.stderr}")
 
 
+_CTEST_NAME_RE = re.compile(r"^Test\s+#\d+:\s*(.+)$")
+
+
 def list_ctest_names(build_dir: Path):
     result = run(["ctest", "-N"], cwd=build_dir)
     names = []
     for line in result.stdout.splitlines():
-        line = line.strip()
-        if line.startswith("Test #"):
-            # Format: "Test #3: duplicates_repeated_values"
-            names.append(line.split(":", 1)[1].strip())
+        # ctest right-aligns the test number, so single- vs multi-digit
+        # test counts use a different number of spaces before "#N:"
+        # (e.g. "Test  #1:" vs "Test #10:"). Match on whitespace, not an
+        # exact literal prefix.
+        match = _CTEST_NAME_RE.match(line.strip())
+        if match:
+            names.append(match.group(1).strip())
     return names
 
 
