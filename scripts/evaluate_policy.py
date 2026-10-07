@@ -11,8 +11,12 @@ Emits a policy decision (JSON) describing whether remediation is allowed,
 and if not, why. The engine fails closed: any ambiguity, missing data, or
 rule violation results in a denial.
 
-This script never calls an AI model. It is pure, deterministic rule
-evaluation over the policy file at .github/policies/self-heal-policy.yml.
+Policy is driven by the evidence's `failure_category`
+(unit-test-failure / coverage-gap / performance-regression), looked up
+in `.github/policies/self-heal-policy.yml`'s `categories` block -- not
+by a fixed scenario id, because a real developer pull request can touch
+any file. This script never calls an AI model; it is pure, deterministic
+rule evaluation over that policy file.
 """
 from __future__ import annotations
 
@@ -51,37 +55,36 @@ def evaluate(
     conditions; only raises for structurally malformed inputs."""
 
     reasons: List[str] = []
-    scenario = evidence.get("scenario")
-    scenarios = policy.get("scenarios", {})
+    failure_category = evidence.get("failure_category")
+    categories = policy.get("categories", {})
 
     if not classification.get("supported", False):
         return _deny(
-            scenario,
+            failure_category,
             ["classifier marked evidence as unsupported: "
              + str(classification.get("reason", "no reason given"))],
         )
 
-    scenario_policy = scenarios.get(scenario)
-    if scenario_policy is None:
-        return _deny(scenario, [f"no policy defined for scenario {scenario!r}"])
+    category_policy = categories.get(failure_category)
+    if category_policy is None:
+        return _deny(failure_category, [f"no policy defined for category {failure_category!r}"])
 
-    failure_category = evidence.get("failure_category")
-    if failure_category != scenario_policy.get("allowed_failure_category"):
+    classified_category = classification.get("failure_category")
+    if classified_category != failure_category:
         reasons.append(
-            "evidence failure_category "
-            f"{failure_category!r} does not match the scenario's allowed "
-            f"category {scenario_policy.get('allowed_failure_category')!r}"
+            f"classification failure_category {classified_category!r} does not match "
+            f"evidence failure_category {failure_category!r}"
         )
 
     attempt_number = evidence.get("attempt_number", 1)
-    max_attempts = scenario_policy.get("max_attempts", 1)
+    max_attempts = category_policy.get("max_attempts", 1)
     if attempt_number > max_attempts:
         reasons.append(
             f"attempt_number {attempt_number} exceeds max_attempts {max_attempts}"
         )
 
     budget = evidence.get("runtime_budget", {})
-    budget_minutes = scenario_policy.get("runtime_budget_minutes")
+    budget_minutes = category_policy.get("runtime_budget_minutes")
     elapsed = budget.get("elapsed_minutes")
     if elapsed is not None and budget_minutes is not None and elapsed > budget_minutes:
         reasons.append(
@@ -89,49 +92,49 @@ def evaluate(
         )
 
     global_forbidden = policy.get("globally_forbidden_paths", [])
-    scenario_forbidden = scenario_policy.get("forbidden_paths", [])
-    permitted = scenario_policy.get("permitted_paths", [])
+    category_forbidden = category_policy.get("forbidden_paths", [])
+    permitted = category_policy.get("permitted_paths", [])
 
     for f in changed_files:
         if _matches_any(f, global_forbidden):
             reasons.append(f"changed file {f!r} matches a globally forbidden path")
-        elif _matches_any(f, scenario_forbidden):
-            reasons.append(f"changed file {f!r} matches a scenario-forbidden path")
+        elif _matches_any(f, category_forbidden):
+            reasons.append(f"changed file {f!r} matches a category-forbidden path")
         elif not _matches_any(f, permitted):
             reasons.append(f"changed file {f!r} is outside every permitted path")
 
-    max_changed = scenario_policy.get("max_changed_files")
+    max_changed = category_policy.get("max_changed_files")
     if max_changed is not None and len(changed_files) > max_changed:
         reasons.append(
             f"changed-file count {len(changed_files)} exceeds max_changed_files {max_changed}"
         )
 
-    max_ins = scenario_policy.get("max_inserted_lines")
+    max_ins = category_policy.get("max_inserted_lines")
     if max_ins is not None and inserted_lines > max_ins:
         reasons.append(f"inserted lines {inserted_lines} exceeds max_inserted_lines {max_ins}")
 
-    max_del = scenario_policy.get("max_deleted_lines")
+    max_del = category_policy.get("max_deleted_lines")
     if max_del is not None and deleted_lines > max_del:
         reasons.append(f"deleted lines {deleted_lines} exceeds max_deleted_lines {max_del}")
 
     if reasons:
-        return _deny(scenario, reasons)
+        return _deny(failure_category, reasons)
 
     return {
-        "schema_version": "1.0",
-        "scenario": scenario,
+        "schema_version": "2.0",
+        "failure_category": failure_category,
         "decision": "allow",
-        "required_validation_profile": scenario_policy.get("required_validation_profile"),
-        "runtime_budget_minutes": scenario_policy.get("runtime_budget_minutes"),
+        "required_validation_profile": category_policy.get("required_validation_profile"),
+        "runtime_budget_minutes": category_policy.get("runtime_budget_minutes"),
         "permitted_paths": permitted,
         "reasons": [],
     }
 
 
-def _deny(scenario, reasons) -> dict:
+def _deny(failure_category, reasons) -> dict:
     return {
-        "schema_version": "1.0",
-        "scenario": scenario,
+        "schema_version": "2.0",
+        "failure_category": failure_category,
         "decision": "deny",
         "required_validation_profile": None,
         "runtime_budget_minutes": None,

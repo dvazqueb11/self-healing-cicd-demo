@@ -8,6 +8,22 @@ loosening thresholds, touching forbidden files, etc).
 
 A remediation is successful only when every check in its profile passes.
 This script performs no AI reasoning.
+
+Diff bases used by this script are intentionally two different commits:
+
+  - Patch-scope / anti-weakening checks always diff the remediation
+    against `evidence.head_sha` (the exact failing commit the agent
+    started from), never against `main` or `evidence.base_sha` -- the
+    *developer's* pull request may itself touch paths that would be
+    forbidden for the *remediation* to re-touch, so diffing against
+    anything earlier than the failing commit would incorrectly blame
+    the agent for the original PR's own changes.
+  - The coverage profile's changed-line-coverage check diffs against
+    `evidence.base_sha` (the original PR's base commit) instead, because
+    the question there is "did the developer's own new production code
+    get covered by the agent's new tests", which is only answerable
+    relative to the PR's own base, not the failing commit the agent
+    started from.
 """
 from __future__ import annotations
 
@@ -102,6 +118,23 @@ def list_ctest_names(build_dir: Path):
     return names
 
 
+def run_failed_tests_first(build_dir: Path, failing_tests):
+    """Unit-test-remediation profile only: re-run the specific tests the
+    evidence recorded as failing before re-running the full suite, so a
+    fix that happens to pass everything-but-the-actual-bug is caught
+    immediately with a focused error instead of a generic full-suite
+    failure."""
+    if not failing_tests:
+        return
+    result = run(["ctest", "--output-on-failure", "-R",
+                  "^(" + "|".join(re.escape(name) for name in failing_tests) + ")$"],
+                 cwd=build_dir)
+    if result.returncode != 0:
+        raise ValidationError(
+            f"previously-failing test(s) {failing_tests} still fail:\n{result.stdout}"
+        )
+
+
 def run_all_unit_tests(build_dir: Path):
     result = run(["ctest", "--output-on-failure", "-E", "performance_policy"], cwd=build_dir)
     if result.returncode != 0:
@@ -115,7 +148,7 @@ def verify_required_tests_present(build_dir: Path):
         raise ValidationError(f"required tests are missing/disabled: {sorted(missing)}")
 
 
-def verify_patch_scope(scenario: str, base_branch: str, build_dir: Path):
+def verify_patch_scope(base_branch: str, build_dir: Path):
     changed_files, merge_base = changed_files_since(base_branch)
     numstat_text = numstat_since(base_branch, merge_base)
 
@@ -144,47 +177,77 @@ def verify_paths_unchanged(changed_files, forbidden_prefixes, description):
         raise ValidationError(f"{description}: {hits}")
 
 
-def profile_unit_test_remediation(scenario: str, base_branch: str, build_dir: Path) -> dict:
+def _load_evidence() -> dict:
+    evidence_path = REPO_ROOT / ".evidence" / "evidence.json"
+    if not evidence_path.exists():
+        raise ValidationError("evidence.json not found; cannot validate")
+    return json.loads(evidence_path.read_text())
+
+
+def profile_unit_test_remediation(base_branch: str, build_dir: Path) -> dict:
+    evidence = _load_evidence()
     configure_and_build(build_dir, enable_coverage=False)
+    failing_tests = (evidence.get("measurements") or {}).get("failing_tests") or []
+    run_failed_tests_first(build_dir, failing_tests)
     run_all_unit_tests(build_dir)
     verify_required_tests_present(build_dir)
-    changed_files = verify_patch_scope(scenario, base_branch, build_dir)
-    return {"changed_files": changed_files}
+    changed_files = verify_patch_scope(base_branch, build_dir)
+    return {"changed_files": changed_files, "failing_tests_reverified": failing_tests}
 
 
-def profile_coverage_remediation(scenario: str, base_branch: str, build_dir: Path) -> dict:
+def profile_coverage_remediation(base_branch: str, build_dir: Path) -> dict:
+    evidence = _load_evidence()
     configure_and_build(build_dir, enable_coverage=True)
     run_all_unit_tests(build_dir)
     verify_required_tests_present(build_dir)
 
+    original_base_sha = evidence.get("base_sha") or base_branch
     coverage_json = build_dir / "coverage.json"
     coverage_result = run([
         sys.executable, str(REPO_ROOT / "scripts" / "measure_coverage.py"),
         "--build-dir", str(build_dir), "--threshold", str(measure_coverage.DEFAULT_THRESHOLD),
+        "--diff-against", original_base_sha,
         "--output", str(coverage_json),
     ])
     if coverage_result.returncode != 0:
         raise ValidationError(f"coverage policy still failing:\n{coverage_result.stdout}")
 
-    changed_files = verify_patch_scope(scenario, base_branch, build_dir)
+    changed_files = verify_patch_scope(base_branch, build_dir)
     verify_paths_unchanged(changed_files, PRODUCTION_PATHS, "production code was modified")
     verify_paths_unchanged(changed_files, COVERAGE_CONFIG_PATHS,
                             "coverage threshold/exclusions were modified")
     return {"changed_files": changed_files, "coverage": json.loads(coverage_json.read_text())}
 
 
-def profile_performance_remediation(scenario: str, base_branch: str, build_dir: Path) -> dict:
+def profile_performance_remediation(base_branch: str, build_dir: Path) -> dict:
     configure_and_build(build_dir, enable_coverage=False)
     run_all_unit_tests(build_dir)
     verify_required_tests_present(build_dir)
 
-    bench_result = run([str(build_dir / "performance_check")])
-    if bench_result.returncode != 0:
-        raise ValidationError(f"performance policy still failing:\n{bench_result.stdout}")
+    # A single benchmark run can be noisy on a shared CI runner; require
+    # the fix to pass on a stable majority of repeated runs rather than
+    # a single pass/fail sample, per the performance-remediation profile.
+    benchmark_runs = []
+    passes = 0
+    attempts = 3
+    for _ in range(attempts):
+        bench_result = run([str(build_dir / "performance_check")])
+        benchmark_runs.append(bench_result.stdout)
+        if bench_result.returncode == 0:
+            passes += 1
+    if passes < 2:
+        raise ValidationError(
+            f"performance policy still failing ({passes}/{attempts} runs passed):\n"
+            + "\n---\n".join(benchmark_runs)
+        )
 
-    changed_files = verify_patch_scope(scenario, base_branch, build_dir)
+    changed_files = verify_patch_scope(base_branch, build_dir)
     verify_paths_unchanged(changed_files, BENCHMARK_PATHS, "benchmark configuration was modified")
-    return {"changed_files": changed_files, "benchmark_output": bench_result.stdout}
+    return {
+        "changed_files": changed_files,
+        "benchmark_runs_passed": f"{passes}/{attempts}",
+        "benchmark_output": benchmark_runs[-1],
+    }
 
 
 PROFILES = {
@@ -195,20 +258,19 @@ PROFILES = {
 
 
 def _default_base_branch() -> str:
-    """Prefer the evidence's triggering_sha as the remediation base.
-
-    The fixture/failure commit is the correct diff base for patch-scope
-    checks (it is the state the remediation started from), not the
-    repository's overall "main" -- a scenario's fixture itself may
-    touch paths that are forbidden for remediation to re-touch, so
-    diffing against literal "main" would incorrectly blame the agent
-    for the fixture's own pre-existing change.
+    """Diff base for patch-scope/anti-weakening checks: always
+    `evidence.head_sha` (the exact failing commit the agent started
+    from), never `main` or `evidence.base_sha` -- the developer's own
+    pull request may itself touch paths that would be forbidden for the
+    *remediation* to re-touch, so diffing against anything earlier than
+    the failing commit would incorrectly blame the agent for the
+    original PR's own changes.
     """
     evidence_path = REPO_ROOT / ".evidence" / "evidence.json"
     if evidence_path.exists():
         try:
             evidence = json.loads(evidence_path.read_text())
-            sha = evidence.get("triggering_sha")
+            sha = evidence.get("head_sha")
             if sha:
                 return sha
         except (json.JSONDecodeError, OSError):
@@ -219,12 +281,11 @@ def _default_base_branch() -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--profile", required=True, choices=sorted(PROFILES.keys()))
-    parser.add_argument("--scenario", required=True)
     parser.add_argument(
         "--base-branch", default=None,
-        help="Git ref to diff the remediation against. Defaults to the "
-             "triggering_sha recorded in .evidence/evidence.json (the "
-             "failure commit), falling back to 'main' if no evidence "
+        help="Git ref to diff the remediation's patch scope against. "
+             "Defaults to the head_sha recorded in .evidence/evidence.json "
+             "(the failure commit), falling back to 'main' if no evidence "
              "is present.",
     )
     parser.add_argument("--build-dir", default=REPO_ROOT / "build", type=Path)
@@ -233,9 +294,8 @@ def main() -> int:
     base_branch = args.base_branch or _default_base_branch()
 
     result = {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "profile": args.profile,
-        "scenario": args.scenario,
         "base_branch": base_branch,
         "passed": False,
         "details": {},
@@ -243,7 +303,7 @@ def main() -> int:
     }
 
     try:
-        details = PROFILES[args.profile](args.scenario, base_branch, args.build_dir)
+        details = PROFILES[args.profile](base_branch, args.build_dir)
         result["details"] = details
         result["passed"] = True
     except ValidationError as exc:

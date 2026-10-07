@@ -1,17 +1,19 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://example.invalid/self-healing-cicd-demo/evidence-schema-v1.json",
-  "title": "Self-Healing CI/CD Evidence Contract",
-  "description": "Normalized, machine-readable evidence produced by an event adapter / evidence collector and consumed by the deterministic classifier, policy engine, and remediation agent. See docs/evidence-contract.md for the full description.",
+  "title": "Self-Healing CI/CD Evidence Contract (v2.0 payload)",
+  "description": "Normalized, machine-readable, PR-provenanced evidence produced by scripts/collect_evidence.py in ci.yml and consumed by the deterministic classifier, policy engine, and remediation agent. None of those consumers parse raw tool output directly. See docs/evidence-contract.md for the full description. NOTE: the file is still named evidence-schema-v1.json for historical/path stability; its `schema_version` content field is '2.0' -- see docs/evidence-contract.md for the migration note.",
   "type": "object",
   "required": [
     "schema_version",
-    "scenario",
     "event_source",
     "repository",
-    "branch",
-    "triggering_sha",
-    "workflow_run",
+    "pr_number",
+    "base_branch",
+    "base_sha",
+    "head_branch",
+    "head_sha",
+    "workflow_run_id",
     "changed_files",
     "diff_file",
     "failure_category",
@@ -21,36 +23,53 @@
     "relevant_files",
     "measurements",
     "runtime_budget",
-    "attempt_number"
+    "attempt_number",
+    "signature"
   ],
   "properties": {
     "schema_version": {
       "type": "string",
-      "const": "1.0"
+      "const": "2.0"
     },
     "scenario": {
-      "type": "string",
-      "enum": ["easy-unit-test", "medium-low-coverage", "advanced-performance"]
+      "type": ["string", "null"],
+      "enum": ["easy-unit-test", "medium-low-coverage", "advanced-performance", null],
+      "description": "Optional provenance only, set when evidence originated from an optional demo fixture (scripts/create_demo_failure.py / scripts/demo_submit_pr.py). Never read by the classifier, policy engine, or validator -- every decision is driven by failure_category and measurements."
     },
     "event_source": {
       "type": "string",
-      "description": "Identifier of the adapter that produced this evidence, e.g. 'unit-test-adapter'."
+      "description": "Identifier of the collector that produced this evidence, currently always 'scripts/collect_evidence.py'."
     },
     "repository": {
       "type": "string",
-      "description": "owner/repo of the repository the event occurred in."
+      "description": "owner/repo of the repository the pull request belongs to."
     },
-    "branch": {
-      "type": "string",
-      "description": "The temporary demo branch the failure was observed on."
+    "pr_number": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The original developer pull request this evidence was collected for."
     },
-    "triggering_sha": {
+    "base_branch": {
       "type": "string",
-      "pattern": "^[0-9a-f]{7,40}$"
+      "description": "The pull request's base branch (e.g. 'main')."
     },
-    "workflow_run": {
+    "base_sha": {
       "type": "string",
-      "description": "Identifier or URL of the workflow run that generated this evidence."
+      "pattern": "^[0-9a-f]{7,40}$",
+      "description": "The commit the pull request is based on at collection time."
+    },
+    "head_branch": {
+      "type": "string",
+      "description": "The developer's branch -- the remediation fix PR targets this branch, not base_branch."
+    },
+    "head_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$",
+      "description": "The exact failing commit. The remediation agent checks out this SHA, and validate_change.py diffs the proposed fix against it, never against base_branch/main."
+    },
+    "workflow_run_id": {
+      "type": "string",
+      "description": "The CI workflow run id that produced this evidence, used by the remediation workflow to fetch the evidence artifact and cross-check provenance via the GitHub API."
     },
     "changed_files": {
       "type": "array",
@@ -58,7 +77,7 @@
     },
     "diff_file": {
       "type": "string",
-      "description": "Path to a normalized, size-limited diff file relative to the evidence directory."
+      "description": "Path to a normalized, size-limited diff file (base_sha..head_sha) relative to the evidence directory."
     },
     "failure_category": {
       "type": "string",
@@ -74,11 +93,11 @@
     },
     "failure_signature": {
       "type": "string",
-      "description": "Stable, deterministic identifier used for classification and escalation de-duplication."
+      "description": "Stable, deterministic identifier used for classification and escalation/duplicate-PR de-duplication."
     },
     "concise_log_file": {
       "type": "string",
-      "description": "Path to a normalized, size-limited log excerpt relative to the evidence directory. Full raw logs are never passed to the agent."
+      "description": "Path to a normalized, size-limited log excerpt relative to the evidence directory. Full raw logs are never handed to the agent."
     },
     "relevant_files": {
       "type": "array",
@@ -87,7 +106,7 @@
     },
     "measurements": {
       "type": "object",
-      "description": "Scenario-specific structured measurements (e.g. coverage percent, benchmark timings). Free-form but must be JSON-serializable and small.",
+      "description": "Structured measurements for all three deterministic checks (failing test names, coverage percent/uncovered lines, benchmark medians), regardless of which one is the active failure_category, so the agent has full context.",
       "additionalProperties": true
     },
     "runtime_budget": {
@@ -101,7 +120,12 @@
     "attempt_number": {
       "type": "integer",
       "minimum": 1,
-      "description": "1 for the first and only permitted remediation attempt. The policy engine rejects attempt_number > 1."
+      "description": "1 for the first and only permitted remediation attempt per failing commit. The policy engine rejects attempt_number > 1."
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "sha256 hex digest over every other field (canonical, sorted-key JSON), computed by the trusted CI job that collected this evidence. Tamper-evidence for the artifact handoff across the CI -> remediation workflow trust boundary; see framework/schemas/evidence_lib.py:compute_signature and docs/architecture.md#known-limitations."
     }
   },
   "additionalProperties": false

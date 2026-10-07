@@ -1,5 +1,5 @@
-# gh-aw-metadata: {"schema_version":"v4","frontmatter_hash":"6e0325fdc95d2ee92338d986897c38dacdbee5da409d0d38caf6e735c5edd80c","body_hash":"e8b54ef953331786b36aae07927a36a9e8e2dc8585348da1bf5165f1a42fd49e","compiler_version":"v0.89.21","strict":true,"agent_id":"copilot","engine_versions":{"copilot":"1.0.87"}}
-# gh-aw-manifest: {"version":1,"secrets":["COPILOT_GITHUB_TOKEN","GH_AW_CI_TRIGGER_TOKEN","GH_AW_DEFAULT_OTLP_ENDPOINT","GH_AW_DEFAULT_OTLP_HEADERS","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN"],"actions":[{"repo":"actions/checkout","sha":"3d3c42e5aac5ba805825da76410c181273ba90b1","version":"v7.0.1"},{"repo":"actions/download-artifact","sha":"3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c","version":"v8.0.1"},{"repo":"actions/github-script","sha":"3a2844b7e9c422d3c10d287c895573f7108da1b3","version":"v9.0.0"},{"repo":"actions/setup-node","sha":"820762786026740c76f36085b0efc47a31fe5020","version":"v7.0.0"},{"repo":"actions/setup-python","sha":"5fda3b95a4ea91299a34e894583c3862153e4b97","version":"v7.0.0"},{"repo":"actions/upload-artifact","sha":"043fb46d1a93c77aae656e7c1c64a875d1fc6a0a","version":"v7.0.1"},{"repo":"github/gh-aw-actions/setup","sha":"924af5fdc64061cfbf66fb584c8b07e2ac230c60","version":"v0.89.21"}],"containers":[{"image":"ghcr.io/github/gh-aw-firewall/agent:0.28.23","digest":"sha256:2c78aaba1c108e130e2d6d01e4f2cca334ea04c53e6f258913ac34173fe7e3b2","pinned_image":"ghcr.io/github/gh-aw-firewall/agent:0.28.23@sha256:2c78aaba1c108e130e2d6d01e4f2cca334ea04c53e6f258913ac34173fe7e3b2"},{"image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.28.23","digest":"sha256:c15c3d1208df10c5b588a3657be53742aa982ae0909d1eb1812525268794ca64","pinned_image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.28.23@sha256:c15c3d1208df10c5b588a3657be53742aa982ae0909d1eb1812525268794ca64"},{"image":"ghcr.io/github/gh-aw-firewall/squid:0.28.23","digest":"sha256:02ffc56dd40158223064ef03a78c2d9717473c93723b4e403d455ea6f0b09ae0","pinned_image":"ghcr.io/github/gh-aw-firewall/squid:0.28.23@sha256:02ffc56dd40158223064ef03a78c2d9717473c93723b4e403d455ea6f0b09ae0"},{"image":"ghcr.io/github/gh-aw-mcpg:v0.4.25","digest":"sha256:9be0a86220e807a0ecc89e53d7453468f7a53fbc6b3d1efd2299025ffe01d086","pinned_image":"ghcr.io/github/gh-aw-mcpg:v0.4.25@sha256:9be0a86220e807a0ecc89e53d7453468f7a53fbc6b3d1efd2299025ffe01d086"},{"image":"ghcr.io/github/gh-aw-node","digest":"sha256:11c2c544876cdbaffefe0f7f1283b74838c209654b4934a78e23ed11f750490f","pinned_image":"ghcr.io/github/gh-aw-node@sha256:11c2c544876cdbaffefe0f7f1283b74838c209654b4934a78e23ed11f750490f"},{"image":"ghcr.io/github/github-mcp-server:v1.12.2","digest":"sha256:508a0857ec762b1ab1cece29193345b501fab1dd9d1228a7b617062954cecac6","pinned_image":"ghcr.io/github/github-mcp-server:v1.12.2@sha256:508a0857ec762b1ab1cece29193345b501fab1dd9d1228a7b617062954cecac6"}],"mcp_servers":[{"name":"github","tools":["get_commit","get_file_contents","get_latest_release","get_me","get_pull_request","get_pull_request_comments","get_pull_request_diff","get_pull_request_files","get_pull_request_review_comments","get_pull_request_reviews","get_pull_request_status","get_release_by_tag","get_tag","issue_read","list_branches","list_commits","list_issue_types","list_issues","list_pull_requests","list_releases","list_starred_repositories","list_tags","pull_request_read","search_code","search_issues","search_pull_requests","search_repositories"]},{"name":"safeoutputs","tools":["create_issue","create_pull_request","missing_data","missing_tool","noop"]}]}
+# gh-aw-metadata: {"schema_version":"v4","frontmatter_hash":"55e95d78f6fd0cc169e37d43bb8f0e3c2ca247296538d19f7cfed8881eb0d53a","body_hash":"3d08aab7852f6db9e660a36120b649e151a5dcf468bdba4dae84f511af081920","compiler_version":"v0.89.21","strict":true,"agent_id":"copilot","engine_versions":{"copilot":"1.0.87"}}
+# gh-aw-manifest: {"version":1,"secrets":["COPILOT_GITHUB_TOKEN","GH_AW_CI_TRIGGER_TOKEN","GH_AW_DEFAULT_OTLP_ENDPOINT","GH_AW_DEFAULT_OTLP_HEADERS","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN"],"actions":[{"repo":"actions/checkout","sha":"3d3c42e5aac5ba805825da76410c181273ba90b1","version":"3d3c42e5aac5ba805825da76410c181273ba90b1"},{"repo":"actions/download-artifact","sha":"3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c","version":"v8.0.1"},{"repo":"actions/github-script","sha":"3a2844b7e9c422d3c10d287c895573f7108da1b3","version":"v9.0.0"},{"repo":"actions/setup-node","sha":"820762786026740c76f36085b0efc47a31fe5020","version":"v7.0.0"},{"repo":"actions/setup-python","sha":"5fda3b95a4ea91299a34e894583c3862153e4b97","version":"v7.0.0"},{"repo":"actions/upload-artifact","sha":"043fb46d1a93c77aae656e7c1c64a875d1fc6a0a","version":"v7.0.1"},{"repo":"github/gh-aw-actions/setup","sha":"924af5fdc64061cfbf66fb584c8b07e2ac230c60","version":"v0.89.21"}],"containers":[{"image":"ghcr.io/github/gh-aw-firewall/agent:0.28.23","digest":"sha256:2c78aaba1c108e130e2d6d01e4f2cca334ea04c53e6f258913ac34173fe7e3b2","pinned_image":"ghcr.io/github/gh-aw-firewall/agent:0.28.23@sha256:2c78aaba1c108e130e2d6d01e4f2cca334ea04c53e6f258913ac34173fe7e3b2"},{"image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.28.23","digest":"sha256:c15c3d1208df10c5b588a3657be53742aa982ae0909d1eb1812525268794ca64","pinned_image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.28.23@sha256:c15c3d1208df10c5b588a3657be53742aa982ae0909d1eb1812525268794ca64"},{"image":"ghcr.io/github/gh-aw-firewall/squid:0.28.23","digest":"sha256:02ffc56dd40158223064ef03a78c2d9717473c93723b4e403d455ea6f0b09ae0","pinned_image":"ghcr.io/github/gh-aw-firewall/squid:0.28.23@sha256:02ffc56dd40158223064ef03a78c2d9717473c93723b4e403d455ea6f0b09ae0"},{"image":"ghcr.io/github/gh-aw-mcpg:v0.4.25","digest":"sha256:9be0a86220e807a0ecc89e53d7453468f7a53fbc6b3d1efd2299025ffe01d086","pinned_image":"ghcr.io/github/gh-aw-mcpg:v0.4.25@sha256:9be0a86220e807a0ecc89e53d7453468f7a53fbc6b3d1efd2299025ffe01d086"},{"image":"ghcr.io/github/gh-aw-node","digest":"sha256:11c2c544876cdbaffefe0f7f1283b74838c209654b4934a78e23ed11f750490f","pinned_image":"ghcr.io/github/gh-aw-node@sha256:11c2c544876cdbaffefe0f7f1283b74838c209654b4934a78e23ed11f750490f"},{"image":"ghcr.io/github/github-mcp-server:v1.12.2","digest":"sha256:508a0857ec762b1ab1cece29193345b501fab1dd9d1228a7b617062954cecac6","pinned_image":"ghcr.io/github/github-mcp-server:v1.12.2@sha256:508a0857ec762b1ab1cece29193345b501fab1dd9d1228a7b617062954cecac6"}],"mcp_servers":[{"name":"github","tools":["get_commit","get_file_contents","get_latest_release","get_me","get_pull_request","get_pull_request_comments","get_pull_request_diff","get_pull_request_files","get_pull_request_review_comments","get_pull_request_reviews","get_pull_request_status","get_release_by_tag","get_tag","issue_read","list_branches","list_commits","list_issue_types","list_issues","list_pull_requests","list_releases","list_starred_repositories","list_tags","pull_request_read","search_code","search_issues","search_pull_requests","search_repositories"]},{"name":"safeoutputs","tools":["add_comment","create_issue","create_pull_request","missing_data","missing_tool","noop"]}]}
 # This file was automatically generated by gh-aw (v0.89.21). DO NOT EDIT. To debug this workflow, load the skill at https://github.com/github/gh-aw/blob/main/debug.md
 #
 #    ___                   _   _
@@ -23,9 +23,9 @@
 #
 # For more information: https://github.github.com/gh-aw/introduction/overview/
 #
-# Single bounded remediation agent for the self-healing CI/CD demo. Given a scenario that has already been applied, built, measured, classified, and policy-approved by deterministic steps, proposes the smallest correct code change, validates it with the same deterministic tools used to judge it, and opens a draft pull request for human review. Never merges anything itself.
+# Single bounded remediation agent for the self-healing CI/CD demo. Triggered automatically when the deterministic `CI` workflow fails on a real developer pull request, it downloads and verifies the evidence that CI job produced, deterministically classifies the failure and evaluates policy, posts a concise diagnosis and plan on the original pull request, then makes one bounded attempt at the smallest correct fix, validates it with the same deterministic tools used to judge it, and opens a draft **stacked** pull request targeting the developer's own branch (not `main`) for human review. Never merges anything itself.
 #
-# Intent: Demonstrate bounded, auditable AI remediation of a classified CI failure without ever bypassing human review or deterministic validation.
+# Intent: Demonstrate bounded, auditable AI remediation of a real CI failure on a real pull request without ever bypassing human review or deterministic validation, and without creating a self-triggering loop.
 #
 # Secrets used:
 #   - COPILOT_GITHUB_TOKEN
@@ -37,6 +37,7 @@
 #   - GITHUB_TOKEN
 #
 # Custom actions used:
+#   - actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 #   - actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 #   - actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
 #   - actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -56,26 +57,20 @@
 
 name: "Self-Heal Remediation Agent"
 on:
-  workflow_dispatch:
-    inputs:
-      aw_context:
-        default: ""
-        description: "Agent caller context (used internally by Agentic Workflows)."
-        required: false
-        type: string
-      scenario:
-        description: Which demo fixture to apply and attempt to remediate
-        options:
-          - easy-unit-test
-          - medium-low-coverage
-          - advanced-performance
-        required: true
-        type: choice
+  workflow_run:
+    # zizmor: ignore[dangerous-triggers] - workflow_run trigger is secured with role and fork validation
+    # conclusion: # Conclusion filtering compiled into if condition
+    # - failure # Conclusion filtering compiled into if condition
+    types:
+      - completed
+    workflows:
+      - CI
 
 permissions: {}
 
 concurrency:
-  group: self-heal-remediation-${{ github.run_id }}
+  cancel-in-progress: false
+  group: self-heal-remediation-${{ github.event.workflow_run.pull_requests[0].number }}-${{ github.event.workflow_run.head_sha }}
 
 run-name: "Self-Heal Remediation Agent"
 
@@ -89,6 +84,12 @@ env:
 
 jobs:
   activation:
+    needs: pre_activation
+    # zizmor: ignore[dangerous-triggers] - workflow_run trigger is secured with role and fork validation
+    if: >
+      (needs.pre_activation.outputs.activated == 'true' && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'failure'))) &&
+      (github.event_name != 'workflow_run' || github.event.workflow_run.repository.id == github.repository_id &&
+      (!(github.event.workflow_run.repository.fork)))
     runs-on: ubuntu-slim
     permissions:
       actions: read
@@ -121,6 +122,8 @@ jobs:
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
+          trace-id: ${{ needs.pre_activation.outputs.setup-trace-id }}
+          parent-span-id: ${{ needs.pre_activation.outputs.setup-parent-span-id || needs.pre_activation.outputs.setup-span-id }}
           safe-output-artifact-client: ${{ env.GH_AW_MAX_DAILY_AI_CREDITS != '' }}
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Self-Heal Remediation Agent"
@@ -283,12 +286,11 @@ jobs:
           GH_AW_EXPR_802A9F6A: ${{ github.event.issue.number || (fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_type == 'issue' && fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_number) }}
           GH_AW_EXPR_FF1D34CE: ${{ github.event.comment.id || fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').comment_id }}
           GH_AW_GITHUB_ACTOR: ${{ github.actor }}
-          GH_AW_GITHUB_EVENT_INPUTS_SCENARIO: ${{ github.event.inputs.scenario }}
           GH_AW_GITHUB_REPOSITORY: ${{ github.repository }}
           GH_AW_GITHUB_RUN_ID: ${{ github.run_id }}
           GH_AW_GITHUB_WORKSPACE: ${{ github.workspace }}
           GH_AW_PROMPT_CONTENT_0000: "<system>\n"
-          GH_AW_PROMPT_CONTENT_0001: "<safe-output-tools>\nTools: create_issue, create_pull_request, missing_tool, missing_data, noop\n"
+          GH_AW_PROMPT_CONTENT_0001: "<safe-output-tools>\nTools: add_comment(max:2), create_issue, create_pull_request, missing_tool, missing_data, noop\n"
           GH_AW_PROMPT_CONTENT_0002: "</safe-output-tools>\n"
           GH_AW_PROMPT_CONTENT_0003: "<github-context>\nThe following GitHub context information is available for this workflow:\n{{#if github.actor}}\n- **actor**: __GH_AW_GITHUB_ACTOR__\n{{/if}}\n{{#if github.repository}}\n- **repository**: __GH_AW_GITHUB_REPOSITORY__\n{{/if}}\n{{#if github.workspace}}\n- **workspace**: __GH_AW_GITHUB_WORKSPACE__\n{{/if}}\n{{#if github.event.issue.number || (github.aw.context.item_type == 'issue' && github.aw.context.item_number)}}\n- **issue-number**: #__GH_AW_EXPR_802A9F6A__\n{{/if}}\n{{#if github.event.discussion.number || (github.aw.context.item_type == 'discussion' && github.aw.context.item_number)}}\n- **discussion-number**: #__GH_AW_EXPR_1A3A194A__\n{{/if}}\n{{#if github.event.pull_request.number || (github.aw.context.item_type == 'pull_request' && github.aw.context.item_number)}}\n- **pull-request-number**: #__GH_AW_EXPR_463A214A__\n{{/if}}\n{{#if github.event.comment.id || github.aw.context.comment_id}}\n- **comment-id**: __GH_AW_EXPR_FF1D34CE__\n{{/if}}\n{{#if github.run_id}}\n- **workflow-run-id**: __GH_AW_GITHUB_RUN_ID__\n{{/if}}\n</github-context>\n\n"
           GH_AW_PROMPT_CONTENT_0004: "</system>\n"
@@ -304,7 +306,6 @@ jobs:
         env:
           GH_AW_PROMPT: ${{ runner.temp }}/gh-aw/aw-prompts/prompt.txt
           GH_AW_ENGINE_ID: "copilot"
-          GH_AW_GITHUB_EVENT_INPUTS_SCENARIO: ${{ github.event.inputs.scenario }}
         with:
           script: |
             const path = require('path');
@@ -322,11 +323,11 @@ jobs:
           GH_AW_EXPR_802A9F6A: ${{ github.event.issue.number || (fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_type == 'issue' && fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_number) }}
           GH_AW_EXPR_FF1D34CE: ${{ github.event.comment.id || fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').comment_id }}
           GH_AW_GITHUB_ACTOR: ${{ github.actor }}
-          GH_AW_GITHUB_EVENT_INPUTS_SCENARIO: ${{ github.event.inputs.scenario }}
           GH_AW_GITHUB_REPOSITORY: ${{ github.repository }}
           GH_AW_GITHUB_RUN_ID: ${{ github.run_id }}
           GH_AW_GITHUB_WORKSPACE: ${{ github.workspace }}
           GH_AW_MCP_CLI_SERVERS_LIST: "- `github` — run `github --help` to see available tools\n- `safeoutputs` — run `safeoutputs --help` to see available tools"
+          GH_AW_NEEDS_PRE_ACTIVATION_OUTPUTS_ACTIVATED: ${{ needs.pre_activation.outputs.activated }}
         with:
           script: |
             const path = require('path');
@@ -345,11 +346,11 @@ jobs:
                 GH_AW_EXPR_802A9F6A: process.env.GH_AW_EXPR_802A9F6A,
                 GH_AW_EXPR_FF1D34CE: process.env.GH_AW_EXPR_FF1D34CE,
                 GH_AW_GITHUB_ACTOR: process.env.GH_AW_GITHUB_ACTOR,
-                GH_AW_GITHUB_EVENT_INPUTS_SCENARIO: process.env.GH_AW_GITHUB_EVENT_INPUTS_SCENARIO,
                 GH_AW_GITHUB_REPOSITORY: process.env.GH_AW_GITHUB_REPOSITORY,
                 GH_AW_GITHUB_RUN_ID: process.env.GH_AW_GITHUB_RUN_ID,
                 GH_AW_GITHUB_WORKSPACE: process.env.GH_AW_GITHUB_WORKSPACE,
-                GH_AW_MCP_CLI_SERVERS_LIST: process.env.GH_AW_MCP_CLI_SERVERS_LIST
+                GH_AW_MCP_CLI_SERVERS_LIST: process.env.GH_AW_MCP_CLI_SERVERS_LIST,
+                GH_AW_NEEDS_PRE_ACTIVATION_OUTPUTS_ACTIVATED: process.env.GH_AW_NEEDS_PRE_ACTIVATION_OUTPUTS_ACTIVATED
               }
             });
       - name: Validate prompt placeholders
@@ -397,9 +398,13 @@ jobs:
     if: needs.activation.outputs.daily_ai_credits_exceeded != 'true'
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       contents: read
       issues: read
       pull-requests: read
+    concurrency:
+      group: "gh-aw-copilot-${{ github.workflow }}"
+      queue: max
     timeout-minutes: 60
     env:
       DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
@@ -470,20 +475,12 @@ jobs:
         run: bash "${RUNNER_TEMP}/gh-aw/actions/mask_otlp_headers.sh"
       - name: Check OTLP telemetry configuration
         run: bash "${RUNNER_TEMP}/gh-aw/actions/check_otlp_default_credentials.sh"
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Initialize agent execution evidence
         run: |
           mkdir -p "/tmp/gh-aw"
           evidence_tmp="/tmp/gh-aw/agent_execution.json.tmp"
           printf '{"version":1,"component":"agent","run_id":%s,"run_attempt":%s,"state":"not_started"}\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > "$evidence_tmp"
           mv "$evidence_tmp" "/tmp/gh-aw/agent_execution.json"
-      - name: Setup Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: '3.12'
       - name: Create gh-aw temp directory
         run: bash "${RUNNER_TEMP}/gh-aw/actions/create_gh_aw_tmp_dir.sh"
       - name: Configure gh CLI for GitHub Enterprise
@@ -495,39 +492,172 @@ jobs:
         with:
           name: activation
           path: /tmp/gh-aw
-      - name: Install build dependencies
+      - env:
+          GH_AW_EXPR_84AE6855: ${{ github.event.workflow_run.pull_requests[0].number }}
+          GH_AW_GITHUB_EVENT_WORKFLOW_RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          GH_AW_GITHUB_REPOSITORY: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        id: guards
+        name: Evaluate loop-prevention guards (fork / stale head / branch / duplicate)
+        run: |
+          set -euo pipefail
+          PR_NUMBER="$GH_AW_EXPR_84AE6855"
+          if [ -z "$PR_NUMBER" ]; then
+            echo "decision=deny" >> "$GITHUB_OUTPUT"
+            echo "reasons=no same-repository pull request is associated with this workflow run" >> "$GITHUB_OUTPUT"
+          else
+            PR_JSON="$(gh pr view "$PR_NUMBER" --repo "$GH_AW_GITHUB_REPOSITORY" --json headRefOid,headRefName,baseRefName)"
+            CURRENT_HEAD_SHA="$(echo "$PR_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin)['headRefOid'])")"
+            HEAD_BRANCH="$(echo "$PR_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin)['headRefName'])")"
+            BASE_BRANCH="$(echo "$PR_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin)['baseRefName'])")"
+            SHORT_SHA="$(echo "$GH_AW_GITHUB_EVENT_WORKFLOW_RUN_HEAD_SHA" | cut -c1-12)"
+            BRANCH_PREFIX="self-heal/$SHORT_SHA"
+            EXISTING="$(gh pr list --repo "$GH_AW_GITHUB_REPOSITORY" --state open --json headRefName \
+              -q "[.[] | select(.headRefName | startswith(\"$BRANCH_PREFIX\"))] | length")"
+            python3 - "$PR_NUMBER" "$CURRENT_HEAD_SHA" "$EXISTING" "$HEAD_BRANCH" "$BASE_BRANCH" <<'PYEOF'
+          import json, sys
+          sys.path.insert(0, "scripts")
+          import check_remediation_guards as g
+          import evaluate_policy
+
+          pr_number, current_head_sha, existing, head_branch_live, base_branch_live = sys.argv[1:6]
+          context = {
+              "workflow_run": {
+                  "event": "${{ github.event.workflow_run.event }}",
+                  "conclusion": "${{ github.event.workflow_run.conclusion }}",
+                  "head_sha": "${{ github.event.workflow_run.head_sha }}",
+                  "head_branch": "${{ github.event.workflow_run.head_branch }}",
+                  "repository_full_name": "${{ github.event.workflow_run.repository.full_name }}",
+                  "head_repository_full_name": "${{ github.event.workflow_run.head_repository.full_name }}",
+                  "pull_requests": [{"number": int(pr_number), "base_ref": base_branch_live}] if pr_number else [],
+              },
+              "current_pr_head_sha": current_head_sha,
+              "existing_remediation_branch_exists": existing.strip() not in ("0", ""),
+          }
+          policy = evaluate_policy.load_policy()
+          decision = g.evaluate_guards(policy, context)
+          # Prefer the live-looked-up head branch name (exact casing/value from the
+          # PR itself) over the workflow_run payload's copy for downstream outputs.
+          decision["head_branch"] = decision["head_branch"] or head_branch_live
+          with open(".evidence-guard-decision.json", "w") as fh:
+              json.dump(decision, fh, indent=2)
+          print(json.dumps(decision, indent=2))
+          PYEOF
+            DECISION_JSON=".evidence-guard-decision.json"
+            DECISION="$(python3 -c "import json; print(json.load(open('$DECISION_JSON'))['decision'])")"
+            REASONS="$(python3 -c "import json; print('; '.join(json.load(open('$DECISION_JSON'))['reasons']))")"
+            echo "decision=$DECISION" >> "$GITHUB_OUTPUT"
+            echo "reasons=$REASONS" >> "$GITHUB_OUTPUT"
+            echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+            echo "head_branch=$HEAD_BRANCH" >> "$GITHUB_OUTPUT"
+            echo "base_branch=$BASE_BRANCH" >> "$GITHUB_OUTPUT"
+            echo "short_sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
+          fi
+      - env:
+          GH_AW_STEPS_GUARDS_OUTPUTS_REASONS: ${{ steps.guards.outputs.reasons }}
+        if: steps.guards.outputs.decision == 'deny'
+        name: Stop here if guards denied (no AI invocation, no evidence download)
+        run: |
+          {
+            echo "### Self-heal remediation skipped before evidence download"
+            echo ""
+            echo "Loop-prevention guards denied this run: $GH_AW_STEPS_GUARDS_OUTPUTS_REASONS"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo '{"type":"noop","message":"Loop-prevention guards denied this run before evidence was downloaded or any AI model was invoked: $GH_AW_STEPS_GUARDS_OUTPUTS_REASONS"}' >> "$GH_AW_SAFE_OUTPUTS"
+      - if: steps.guards.outputs.decision == 'allow'
+        name: Checkout the exact failing commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - if: steps.guards.outputs.decision == 'allow'
+        name: Write remediation context file for the agent prompt
+        run: |
+          mkdir -p .evidence
+          cat > .evidence/remediation-context.md <<EOF
+          - Original pull request: #${{ steps.guards.outputs.pr_number }}
+          - Head branch (developer's branch, the pull request base for your fix): ${{ steps.guards.outputs.head_branch }}
+          - Base branch of the original pull request: ${{ steps.guards.outputs.base_branch }}
+          - Failing commit short SHA: ${{ steps.guards.outputs.short_sha }}
+          - Suggested remediation branch name: self-heal/${{ steps.guards.outputs.short_sha }}-<category>
+          EOF
+          cat .evidence/remediation-context.md
+      - if: steps.guards.outputs.decision == 'allow'
+        name: Install build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake g++ gcovr lcov
       - env:
-          GH_AW_GITHUB_EVENT_INPUTS_SCENARIO: ${{ github.event.inputs.scenario }}
-        id: fixture
-        name: Apply demo fixture
+          GH_AW_GITHUB_EVENT_WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          GH_AW_GITHUB_REPOSITORY: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        id: evidence
+        if: steps.guards.outputs.decision == 'allow'
+        name: Download the CI run's evidence artifact
         run: |
           set -euo pipefail
-          SCENARIO="$GH_AW_GITHUB_EVENT_INPUTS_SCENARIO"
-          echo "scenario=$SCENARIO" >> "$GITHUB_OUTPUT"
-          python3 scripts/create_demo_failure.py "$SCENARIO"
-      - name: Build (with coverage instrumentation)
+          rm -rf .evidence
+          gh run download $GH_AW_GITHUB_EVENT_WORKFLOW_RUN_ID \
+            --repo "$GH_AW_GITHUB_REPOSITORY" --name self-heal-evidence --dir .evidence
+          test -f .evidence/evidence.json
+      - id: verify
+        if: steps.guards.outputs.decision == 'allow'
+        name: Verify evidence provenance against the live PR (anti-tamper)
         run: |
           set -euo pipefail
-          cmake -S . -B build -DENABLE_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug
-          cmake --build build -j 4
+          python3 - <<'PYEOF'
+          import json, sys
+          sys.path.insert(0, "framework/schemas")
+          import evidence_lib
+
+          evidence = json.loads(open(".evidence/evidence.json").read())
+          errors = evidence_lib.validate_evidence(evidence)
+
+          expected = {
+              "repository": "${{ github.repository }}",
+              "pr_number": int("${{ steps.guards.outputs.pr_number }}"),
+              "head_sha": "${{ github.event.workflow_run.head_sha }}",
+              "workflow_run_id": "${{ github.event.workflow_run.id }}",
+          }
+          for field, want in expected.items():
+              got = evidence.get(field)
+              if got != want:
+                  errors.append(f"evidence.{field} = {got!r} does not match live context {want!r}")
+
+          decision = "allow" if not errors else "deny"
+          with open(".evidence-verify-decision.json", "w") as fh:
+              json.dump({"decision": decision, "reasons": errors}, fh, indent=2)
+          print(json.dumps({"decision": decision, "reasons": errors}, indent=2))
+          PYEOF
+          DECISION="$(python3 -c "import json; print(json.load(open('.evidence-verify-decision.json'))['decision'])")"
+          REASONS="$(python3 -c "import json; print('; '.join(json.load(open('.evidence-verify-decision.json'))['reasons']))")"
+          echo "decision=$DECISION" >> "$GITHUB_OUTPUT"
+          echo "reasons=$REASONS" >> "$GITHUB_OUTPUT"
       - env:
-          GH_AW_STEPS_FIXTURE_OUTPUTS_SCENARIO: ${{ steps.fixture.outputs.scenario }}
-        name: Collect evidence
+          GH_AW_STEPS_VERIFY_OUTPUTS_REASONS: ${{ steps.verify.outputs.reasons }}
+        if: steps.guards.outputs.decision == 'allow' && steps.verify.outputs.decision == 'deny'
+        name: Stop here if evidence verification failed
         run: |
-          set -euo pipefail
-          python3 scripts/collect_evidence.py \
-            --scenario "$GH_AW_STEPS_FIXTURE_OUTPUTS_SCENARIO" \
-            --build-dir build --require-failure
-      - name: Classify failure
+          {
+            echo "### Self-heal remediation skipped: evidence verification failed"
+            echo ""
+            echo "$GH_AW_STEPS_VERIFY_OUTPUTS_REASONS"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo '{"type":"noop","message":"Evidence failed schema/signature/provenance verification: $GH_AW_STEPS_VERIFY_OUTPUTS_REASONS"}' >> "$GH_AW_SAFE_OUTPUTS"
+      - if: steps.guards.outputs.decision == 'allow' && steps.verify.outputs.decision == 'allow'
+        name: Classify failure
         run: |
           set -euo pipefail
           python3 scripts/classify_failure.py \
             --evidence .evidence/evidence.json \
             --output .evidence/classification.json
       - id: policy
+        if: steps.guards.outputs.decision == 'allow' && steps.verify.outputs.decision == 'allow'
         name: Pre-check policy and skip the agent if denied
         run: |
           set -euo pipefail
@@ -550,11 +680,64 @@ jobs:
             } >> "$GITHUB_STEP_SUMMARY"
             echo '{"type":"noop","message":"Policy denied remediation before any AI invocation; see job summary for the decision and reasons."}' >> "$GH_AW_SAFE_OUTPUTS"
           fi
-      - name: Show evidence, classification, and policy decision
+      - env:
+          GH_AW_STEPS_GUARDS_OUTPUTS_PR_NUMBER: ${{ steps.guards.outputs.pr_number }}
+        if: steps.guards.outputs.decision == 'allow' && steps.verify.outputs.decision == 'allow' && steps.policy.outputs.decision == 'allow'
+        name: Post diagnosis and plan to the original pull request
+        run: |
+          set -euo pipefail
+          python3 - <<'PYEOF' > .evidence/diagnosis-comment.md
+          import json
+
+          evidence = json.loads(open(".evidence/evidence.json").read())
+          classification = json.loads(open(".evidence/classification.json").read())
+          decision = json.loads(open(".evidence/policy-decision.json").read())
+          m = evidence["measurements"]
+          category = evidence["failure_category"]
+
+          lines = [
+              f"## 🩹 Self-heal remediation starting",
+              "",
+              f"CI failed on this pull request's head commit `{evidence['head_sha'][:12]}` "
+              f"with failure category **{category}**.",
+              "",
+              "**Evidence summary:**",
+          ]
+          if category == "unit-test-failure":
+              lines.append(f"- Failing tests: `{', '.join(m.get('failing_tests') or [])}`")
+          elif category == "coverage-gap":
+              lines.append(f"- Coverage: {m.get('coverage_percent')}% (threshold {m.get('threshold_percent')}%)")
+              clc = m.get("changed_line_coverage") or {}
+              if clc.get("violations"):
+                  lines.append(f"- Uncovered changed lines: `{clc['violations']}`")
+          elif category == "performance-regression":
+              lines.append(f"- Benchmark median: {m.get('median_ms')}ms (threshold {m.get('threshold_ms')}ms)")
+
+          lines += [
+              "",
+              f"**Plan:** a single bounded AI remediation attempt will try the smallest "
+              f"correct fix within `{decision['permitted_paths']}`, validated with the "
+              f"`{decision['required_validation_profile']}` profile "
+              f"(budget: {decision['runtime_budget_minutes']} minutes, 1 attempt).",
+              "",
+              "If a validated fix is produced, a **draft pull request targeting this "
+              f"branch (`{evidence['head_branch']}`)** will be opened for review. If not, "
+              "an issue will be opened describing what was observed instead.",
+          ]
+          open(".evidence/diagnosis-comment.md", "w").write("\n".join(lines))
+          PYEOF
+          BODY="$(cat .evidence/diagnosis-comment.md)"
+          python3 -c "
+          import json
+          body = open('.evidence/diagnosis-comment.md').read()
+          print(json.dumps({'type': 'add_comment', 'issue_number': $GH_AW_STEPS_GUARDS_OUTPUTS_PR_NUMBER, 'body': body}))
+          " >> "$GH_AW_SAFE_OUTPUTS"
+      - if: steps.guards.outputs.decision == 'allow' && steps.verify.outputs.decision == 'allow'
+        name: Show evidence, classification, and policy decision
         run: |-
           echo "## .evidence/evidence.json"; cat .evidence/evidence.json
-          echo "## .evidence/classification.json"; cat .evidence/classification.json
-          echo "## .evidence/policy-decision.json"; cat .evidence/policy-decision.json
+          echo "## .evidence/classification.json"; cat .evidence/classification.json || true
+          echo "## .evidence/policy-decision.json"; cat .evidence/policy-decision.json || true
 
       - name: Configure Git credentials
         env:
@@ -624,7 +807,7 @@ jobs:
         env:
           GH_AW_FILE_ROOT: "${{ runner.temp }}/gh-aw"
           GH_AW_FILE_CONFIG: "{\"files\":[{\"path\":\"safeoutputs/config.json\",\"content_env\":\"GH_AW_SAFE_OUTPUTS_CONFIG\"}]}"
-          GH_AW_SAFE_OUTPUTS_CONFIG: "{\"create_issue\":{\"labels\":[\"self-heal\",\"needs-human-review\"],\"max\":1,\"title_prefix\":\"[self-heal] \"},\"create_pull_request\":{\"draft\":true,\"labels\":[\"self-heal\",\"demo\"],\"max\":1,\"max_patch_files\":100,\"max_patch_size\":4096,\"protect_top_level_dot_folders\":true,\"protected_files\":[\"package.json\",\"bun.lockb\",\"bunfig.toml\",\"deno.json\",\"deno.jsonc\",\"deno.lock\",\"global.json\",\"NuGet.Config\",\"Directory.Packages.props\",\"mix.exs\",\"mix.lock\",\"go.mod\",\"go.sum\",\"stack.yaml\",\"stack.yaml.lock\",\"pom.xml\",\"build.gradle\",\"build.gradle.kts\",\"settings.gradle\",\"settings.gradle.kts\",\"gradle.properties\",\"package-lock.json\",\"yarn.lock\",\"pnpm-lock.yaml\",\"npm-shrinkwrap.json\",\"requirements.txt\",\"Pipfile\",\"Pipfile.lock\",\"pyproject.toml\",\"setup.py\",\"setup.cfg\",\"Gemfile\",\"Gemfile.lock\",\"uv.lock\",\"CODEOWNERS\",\"DESIGN.md\",\"README.md\",\"CONTRIBUTING.md\",\"SECURITY.md\",\"CODE_OF_CONDUCT.md\",\"AGENTS.md\"],\"protected_files_policy\":\"request-review\"},\"create_report_incomplete_issue\":{},\"missing_data\":{},\"missing_tool\":{},\"noop\":{\"max\":1,\"report-as-issue\":\"false\"},\"report_incomplete\":{}}"
+          GH_AW_SAFE_OUTPUTS_CONFIG: "{\"add_comment\":{\"max\":2,\"target\":\"*\"},\"create_issue\":{\"labels\":[\"self-heal\",\"needs-human-review\"],\"max\":1,\"title_prefix\":\"[self-heal] \"},\"create_pull_request\":{\"base_branch\":\"${{ github.event.workflow_run.pull_requests[0].head.ref }}\",\"draft\":true,\"labels\":[\"self-heal\",\"demo\"],\"max\":1,\"max_patch_files\":100,\"max_patch_size\":4096,\"preserve_branch_name\":true,\"protect_top_level_dot_folders\":true,\"protected_files\":[\"package.json\",\"bun.lockb\",\"bunfig.toml\",\"deno.json\",\"deno.jsonc\",\"deno.lock\",\"global.json\",\"NuGet.Config\",\"Directory.Packages.props\",\"mix.exs\",\"mix.lock\",\"go.mod\",\"go.sum\",\"stack.yaml\",\"stack.yaml.lock\",\"pom.xml\",\"build.gradle\",\"build.gradle.kts\",\"settings.gradle\",\"settings.gradle.kts\",\"gradle.properties\",\"package-lock.json\",\"yarn.lock\",\"pnpm-lock.yaml\",\"npm-shrinkwrap.json\",\"requirements.txt\",\"Pipfile\",\"Pipfile.lock\",\"pyproject.toml\",\"setup.py\",\"setup.cfg\",\"Gemfile\",\"Gemfile.lock\",\"uv.lock\",\"CODEOWNERS\",\"DESIGN.md\",\"README.md\",\"CONTRIBUTING.md\",\"SECURITY.md\",\"CODE_OF_CONDUCT.md\",\"AGENTS.md\"],\"protected_files_policy\":\"request-review\"},\"create_report_incomplete_issue\":{},\"missing_data\":{},\"missing_tool\":{},\"noop\":{\"max\":1,\"report-as-issue\":\"false\"},\"report_incomplete\":{}}"
         with:
           script: |
             const path = require('path');
@@ -638,6 +821,7 @@ jobs:
           GH_AW_TOOLS_META_JSON: |
             {
               "description_suffixes": {
+                "add_comment": " CONSTRAINTS: Maximum 2 comment(s) can be added. Target: *. Supports reply_to_id for discussion threading.",
                 "create_issue": " CONSTRAINTS: Maximum 1 issue(s) can be created. Title will be prefixed with \"[self-heal] \". Labels [\"self-heal\" \"needs-human-review\"] will be automatically added.",
                 "create_pull_request": " CONSTRAINTS: Maximum 1 pull request(s) can be created. Labels [\"self-heal\" \"demo\"] will be automatically added. PRs will be created as drafts."
               },
@@ -646,6 +830,47 @@ jobs:
             }
           GH_AW_VALIDATION_JSON: |
             {
+              "add_comment": {
+                "defaultMax": 1,
+                "fields": {
+                  "body": {
+                    "required": true,
+                    "type": "string",
+                    "sanitize": true,
+                    "maxLength": 65000
+                  },
+                  "comment_id": {
+                    "optionalPositiveInteger": true
+                  },
+                  "item_number": {
+                    "issueOrPRNumber": true
+                  },
+                  "pr": {
+                    "issueOrPRNumber": true
+                  },
+                  "pr_number": {
+                    "issueOrPRNumber": true
+                  },
+                  "reply_to_id": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "repo": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "target": {
+                    "type": "string",
+                    "enum": [
+                      "status"
+                    ]
+                  },
+                  "temporary_id": {
+                    "type": "string",
+                    "pattern": "^#?aw_[A-Za-z0-9_]{3,12}$"
+                  }
+                }
+              },
               "create_issue": {
                 "defaultMax": 1,
                 "fields": {
@@ -1012,7 +1237,7 @@ jobs:
         # --allow-tool shell(wc)
         # --allow-tool shell(yq)
         # --allow-tool write
-        timeout-minutes: 15
+        timeout-minutes: 10
         run: |
           set -o pipefail
           printf '%s' "$(date +%s%3N)" > /tmp/gh-aw/agent_cli_start_ms.txt
@@ -1081,7 +1306,7 @@ jobs:
           GH_AW_PHASE: agent
           GH_AW_PROMPT: /tmp/gh-aw/aw-prompts/prompt.txt
           GH_AW_SAFE_OUTPUTS: ${{ steps.set-runtime-paths.outputs.GH_AW_SAFE_OUTPUTS }}
-          GH_AW_TIMEOUT_MINUTES: 15
+          GH_AW_TIMEOUT_MINUTES: 10
           GH_AW_VERSION: v0.89.21
           GITHUB_API_URL: ${{ github.api_url }}
           GITHUB_AW: true
@@ -1104,7 +1329,7 @@ jobs:
         continue-on-error: true
         env:
           GH_AW_AGENTIC_EXECUTION_OUTCOME: ${{ steps.agentic_execution.outcome }}
-          GH_AW_ENGINE_STEP_TIMEOUT_MINUTES: 15
+          GH_AW_ENGINE_STEP_TIMEOUT_MINUTES: 10
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
@@ -1555,7 +1780,7 @@ jobs:
           GH_AW_FAILURE_REPORT_AS_ISSUE: "true"
           GH_AW_MISSING_TOOL_REPORT_AS_FAILURE: "true"
           GH_AW_MISSING_DATA_REPORT_AS_FAILURE: "true"
-          GH_AW_TIMEOUT_MINUTES: "15"
+          GH_AW_TIMEOUT_MINUTES: "10"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -1688,7 +1913,7 @@ jobs:
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           WORKFLOW_NAME: "Self-Heal Remediation Agent"
-          WORKFLOW_DESCRIPTION: "Single bounded remediation agent for the self-healing CI/CD demo. Given a scenario that has already been applied, built, measured, classified, and policy-approved by deterministic steps, proposes the smallest correct code change, validates it with the same deterministic tools used to judge it, and opens a draft pull request for human review. Never merges anything itself."
+          WORKFLOW_DESCRIPTION: "Single bounded remediation agent for the self-healing CI/CD demo. Triggered automatically when the deterministic `CI` workflow fails on a real developer pull request, it downloads and verifies the evidence that CI job produced, deterministically classifies the failure and evaluates policy, posts a concise diagnosis and plan on the original pull request, then makes one bounded attempt at the smallest correct fix, validates it with the same deterministic tools used to judge it, and opens a draft **stacked** pull request targeting the developer's own branch (not `main`) for human review. Never merges anything itself."
           HAS_PATCH: ${{ needs.agent.outputs.has_patch }}
           GH_AW_DETECTION_CONTINUE_ON_ERROR: "true"
           GH_AW_DETECTION_SKIP_PROMPT_SUMMARY: "true"
@@ -1757,7 +1982,7 @@ jobs:
           RUNNER_TEMP: ${{ runner.temp }}
           TRACEPARENT: ${{ env.GITHUB_AW_OTEL_TRACE_ID != '' && env.GITHUB_AW_OTEL_PARENT_SPAN_ID != '' && format('00-{0}-{1}-01', env.GITHUB_AW_OTEL_TRACE_ID, env.GITHUB_AW_OTEL_PARENT_SPAN_ID) || '' }}
           WORKFLOW_NAME: "Self-Heal Remediation Agent"
-          WORKFLOW_DESCRIPTION: "Single bounded remediation agent for the self-healing CI/CD demo. Given a scenario that has already been applied, built, measured, classified, and policy-approved by deterministic steps, proposes the smallest correct code change, validates it with the same deterministic tools used to judge it, and opens a draft pull request for human review. Never merges anything itself."
+          WORKFLOW_DESCRIPTION: "Single bounded remediation agent for the self-healing CI/CD demo. Triggered automatically when the deterministic `CI` workflow fails on a real developer pull request, it downloads and verifies the evidence that CI job produced, deterministically classifies the failure and evaluates policy, posts a concise diagnosis and plan on the original pull request, then makes one bounded attempt at the smallest correct fix, validates it with the same deterministic tools used to judge it, and opens a draft **stacked** pull request targeting the developer's own branch (not `main`) for human review. Never merges anything itself."
           HAS_PATCH: ${{ needs.agent.outputs.has_patch }}
           GH_AW_DETECTION_CONTINUE_ON_ERROR: "true"
         run: |
@@ -1869,6 +2094,45 @@ jobs:
         run: |
           bash "${RUNNER_TEMP}/gh-aw/actions/conclude_threat_detection.sh" /tmp/gh-aw/threat-detection/detection_result.json
 
+  pre_activation:
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'failure')
+    runs-on: ubuntu-slim
+    env:
+      GH_AW_RUNTIME_FEATURES: ${{ vars.GH_AW_RUNTIME_FEATURES }}
+    outputs:
+      activated: ${{ steps.check_membership.outputs.is_team_member == 'true' }}
+      matched_command: ''
+      setup-parent-span-id: ${{ steps.setup.outputs.parent-span-id || steps.setup.outputs.span-id }}
+      setup-span-id: ${{ steps.setup.outputs.span-id }}
+      setup-trace-id: ${{ steps.setup.outputs.trace-id }}
+    steps:
+      - name: Setup Scripts
+        id: setup
+        uses: github/gh-aw-actions/setup@924af5fdc64061cfbf66fb584c8b07e2ac230c60 # v0.89.21
+        with:
+          destination: ${{ runner.temp }}/gh-aw/actions
+          job-name: ${{ github.job }}
+        env:
+          GH_AW_SETUP_WORKFLOW_NAME: "Self-Heal Remediation Agent"
+          GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/self-heal-remediation.lock.yml@${{ github.ref }}
+          GH_AW_INFO_VERSION: "1.0.87"
+          GH_AW_INFO_AWF_VERSION: "v0.28.23"
+          GH_AW_INFO_ENGINE_ID: "copilot"
+      - name: Check team membership for workflow
+        id: check_membership
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          GH_AW_REQUIRED_ROLES: "admin,maintainer,write"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const path = require('path');
+            const actionsDir = path.join(process.env.RUNNER_TEMP, 'gh-aw', 'actions');
+            const { setupGlobals } = require(path.join(actionsDir, 'setup_globals.cjs'));
+            setupGlobals(core, github, context, exec, io, getOctokit);
+            const { main } = require(path.join(actionsDir, 'check_membership.cjs'));
+            await main();
+
   safe_outputs:
     needs:
       - activation
@@ -1890,6 +2154,7 @@ jobs:
       GH_AW_DETECTION_REASON: ${{ needs.detection.outputs.detection_reason }}
       GH_AW_ENGINE_ID: "copilot"
       GH_AW_ENGINE_MODEL: ${{ needs.agent.outputs.model }}
+      GH_AW_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
       GH_AW_RUNTIME_FEATURES: ${{ vars.GH_AW_RUNTIME_FEATURES }}
       GH_AW_THREAT_DETECTION_AIC: ${{ needs.detection.outputs.aic }}
       GH_AW_WORKFLOW_EMOJI: "🩹"
@@ -1899,6 +2164,8 @@ jobs:
     outputs:
       code_push_failure_count: ${{ steps.process_safe_outputs.outputs.code_push_failure_count }}
       code_push_failure_errors: ${{ steps.process_safe_outputs.outputs.code_push_failure_errors }}
+      comment_id: ${{ steps.process_safe_outputs.outputs.comment_id }}
+      comment_url: ${{ steps.process_safe_outputs.outputs.comment_url }}
       create_discussion_error_count: ${{ steps.process_safe_outputs.outputs.create_discussion_error_count }}
       create_discussion_errors: ${{ steps.process_safe_outputs.outputs.create_discussion_errors }}
       created_issue_number: ${{ steps.process_safe_outputs.outputs.created_issue_number }}
@@ -1985,7 +2252,7 @@ jobs:
           GH_AW_ALLOWED_DOMAINS: "api.snapcraft.io,archive.ubuntu.com,azure.archive.ubuntu.com,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,packagecloud.io,packages.cloud.google.com,packages.microsoft.com,ppa.launchpad.net,s.symcb.com,s.symcd.com,security.ubuntu.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com,www.googleapis.com"
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_API_URL: ${{ github.api_url }}
-          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"create_issue\":{\"labels\":[\"self-heal\",\"needs-human-review\"],\"max\":1,\"title_prefix\":\"[self-heal] \"},\"create_pull_request\":{\"draft\":true,\"labels\":[\"self-heal\",\"demo\"],\"max\":1,\"max_patch_files\":100,\"max_patch_size\":4096,\"protect_top_level_dot_folders\":true,\"protected_files\":[\"package.json\",\"bun.lockb\",\"bunfig.toml\",\"deno.json\",\"deno.jsonc\",\"deno.lock\",\"global.json\",\"NuGet.Config\",\"Directory.Packages.props\",\"mix.exs\",\"mix.lock\",\"go.mod\",\"go.sum\",\"stack.yaml\",\"stack.yaml.lock\",\"pom.xml\",\"build.gradle\",\"build.gradle.kts\",\"settings.gradle\",\"settings.gradle.kts\",\"gradle.properties\",\"package-lock.json\",\"yarn.lock\",\"pnpm-lock.yaml\",\"npm-shrinkwrap.json\",\"requirements.txt\",\"Pipfile\",\"Pipfile.lock\",\"pyproject.toml\",\"setup.py\",\"setup.cfg\",\"Gemfile\",\"Gemfile.lock\",\"uv.lock\",\"CODEOWNERS\",\"DESIGN.md\",\"README.md\",\"CONTRIBUTING.md\",\"SECURITY.md\",\"CODE_OF_CONDUCT.md\",\"AGENTS.md\"],\"protected_files_policy\":\"request-review\"},\"create_report_incomplete_issue\":{},\"missing_data\":{},\"missing_tool\":{},\"noop\":{\"max\":1,\"report-as-issue\":\"false\"},\"report_incomplete\":{}}"
+          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"add_comment\":{\"max\":2,\"target\":\"*\"},\"create_issue\":{\"labels\":[\"self-heal\",\"needs-human-review\"],\"max\":1,\"title_prefix\":\"[self-heal] \"},\"create_pull_request\":{\"base_branch\":\"${{ github.event.workflow_run.pull_requests[0].head.ref }}\",\"draft\":true,\"labels\":[\"self-heal\",\"demo\"],\"max\":1,\"max_patch_files\":100,\"max_patch_size\":4096,\"preserve_branch_name\":true,\"protect_top_level_dot_folders\":true,\"protected_files\":[\"package.json\",\"bun.lockb\",\"bunfig.toml\",\"deno.json\",\"deno.jsonc\",\"deno.lock\",\"global.json\",\"NuGet.Config\",\"Directory.Packages.props\",\"mix.exs\",\"mix.lock\",\"go.mod\",\"go.sum\",\"stack.yaml\",\"stack.yaml.lock\",\"pom.xml\",\"build.gradle\",\"build.gradle.kts\",\"settings.gradle\",\"settings.gradle.kts\",\"gradle.properties\",\"package-lock.json\",\"yarn.lock\",\"pnpm-lock.yaml\",\"npm-shrinkwrap.json\",\"requirements.txt\",\"Pipfile\",\"Pipfile.lock\",\"pyproject.toml\",\"setup.py\",\"setup.cfg\",\"Gemfile\",\"Gemfile.lock\",\"uv.lock\",\"CODEOWNERS\",\"DESIGN.md\",\"README.md\",\"CONTRIBUTING.md\",\"SECURITY.md\",\"CODE_OF_CONDUCT.md\",\"AGENTS.md\"],\"protected_files_policy\":\"request-review\"},\"create_report_incomplete_issue\":{},\"missing_data\":{},\"missing_tool\":{},\"noop\":{\"max\":1,\"report-as-issue\":\"false\"},\"report_incomplete\":{}}"
           GH_AW_CI_TRIGGER_TOKEN: ${{ secrets.GH_AW_CI_TRIGGER_TOKEN }}
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}

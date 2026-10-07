@@ -7,11 +7,18 @@ name: CI
 # self-heal remediation is ultimately re-validated against: if a
 # remediation doesn't make the tests pass / coverage sufficient /
 # benchmark fast again, this workflow fails and the PR cannot merge.
+#
+# On a pull request, every deterministic check always runs to
+# completion (via `continue-on-error`) so a normalized evidence
+# artifact can be produced *before* the job is allowed to fail -- this
+# is what the self-heal-remediation workflow (triggered by this
+# workflow's `workflow_run` completion) consumes. `pull_request` has no
+# `branches:` filter so it also runs on a remediation's own stacked fix
+# PR, which targets the developer's branch, not `main`.
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+  pull_request: {}
   workflow_dispatch: {}
 
 permissions:
@@ -21,6 +28,7 @@ jobs:
   build-test:
     name: Build, test, coverage, benchmark
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -32,23 +40,56 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cmake g++ gcovr lcov
 
-      - name: Configure (with coverage instrumentation)
+      - name: Configure (with coverage instrumentation, once)
         run: cmake -S . -B build -DENABLE_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug
 
-      - name: Build
+      - name: Build (once)
         run: cmake --build build -j 4
 
       - name: Run unit tests
+        id: unit_tests
+        continue-on-error: true
         run: ctest --test-dir build --output-on-failure -E performance_policy
 
       - name: Measure coverage
+        id: coverage
+        continue-on-error: true
         run: |
+          DIFF_AGAINST="origin/${{ github.event.pull_request.base.ref || 'main' }}"
+          git fetch --depth=1 origin "${{ github.event.pull_request.base.ref || 'main' }}" 2>/dev/null || true
+          python3 scripts/measure_coverage.py --build-dir build --threshold 95 \
+            --diff-against "$DIFF_AGAINST" --output build/coverage.json || \
           python3 scripts/measure_coverage.py --build-dir build --threshold 95 \
             --output build/coverage.json
           cat build/coverage.json
 
       - name: Run performance benchmark
+        id: benchmark
+        continue-on-error: true
         run: ./build/performance_check
+
+      - name: Collect evidence (pull requests only; always runs, even on failure)
+        if: always() && github.event_name == 'pull_request'
+        run: |
+          set -euo pipefail
+          python3 scripts/collect_evidence.py \
+            --build-dir build \
+            --repository "${{ github.repository }}" \
+            --pr-number "${{ github.event.pull_request.number }}" \
+            --base-branch "${{ github.event.pull_request.base.ref }}" \
+            --base-sha "${{ github.event.pull_request.base.sha }}" \
+            --head-branch "${{ github.event.pull_request.head.ref }}" \
+            --head-sha "${{ github.event.pull_request.head.sha }}" \
+            --workflow-run-id "${{ github.run_id }}" \
+            --start-time-epoch "$(date -d "${{ github.event.pull_request.updated_at }}" +%s 2>/dev/null || date +%s)"
+
+      - name: Upload evidence artifact
+        if: always() && github.event_name == 'pull_request' && hashFiles('.evidence/evidence.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: self-heal-evidence
+          path: .evidence/
+          retention-days: 7
 
       - name: Run automation test suite
         run: python3 tests/automation/run_all.py
@@ -56,9 +97,19 @@ jobs:
       - name: Scan for secrets / internal references (public-repo hygiene)
         run: python3 scripts/check_public_repo.py
 
+      - name: Assert all deterministic checks passed
+        if: always()
+        run: |
+          status=0
+          [ "${{ steps.unit_tests.outcome }}" = "success" ] || { echo "::error::unit tests failed"; status=1; }
+          [ "${{ steps.coverage.outcome }}" = "success" ] || { echo "::error::coverage check failed"; status=1; }
+          [ "${{ steps.benchmark.outcome }}" = "success" ] || { echo "::error::performance benchmark failed"; status=1; }
+          exit $status
+
   policy-guard:
     name: Universal forbidden-path / diff-size guard
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     # Only meaningful for pull requests, where there is a base ref to
     # diff against. Runs independently of build-test so a forbidden-path
     # violation is reported even if the build itself happens to pass.

@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Reset a previously applied demo-failure fixture.
+"""Reset a previously applied demo-failure fixture in the local working tree.
 
 Reverts the named scenario's fixture patch (the inverse of
 scripts/create_demo_failure.py) and removes any generated evidence
-artifacts under .evidence/. Intended for local experimentation; the
-demo workflow itself applies fixtures only on disposable temporary
-branches, so in CI "reset" simply means discarding that branch.
+artifacts under .evidence/. Intended for local experimentation only; the
+live self-healing demo never applies fixtures to begin with (see
+scripts/demo_submit_pr.py), so there is nothing for the remediation
+workflow itself to "reset" -- a demo pull request is simply closed or its
+branch deleted like any other.
 """
 from __future__ import annotations
 

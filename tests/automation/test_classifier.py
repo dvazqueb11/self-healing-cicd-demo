@@ -47,19 +47,24 @@ class ClassifierTests(unittest.TestCase):
     def test_schema_invalid_evidence_is_unsupported(self):
         ev = h.base_evidence("easy-unit-test", "unit-test-failure",
                               {"failing_tests": ["average_empty_input"]})
-        del ev["triggering_sha"]
+        del ev["head_sha"]
         result = classify_failure.classify(ev, self.policy)
         self.assertFalse(result["supported"])
-        self.assertIn("schema validation", result["reason"])
+        self.assertIn("schema/signature validation", result["reason"])
 
-    def test_category_scenario_mismatch_is_unsupported(self):
+    def test_category_measurement_mismatch_is_unsupported(self):
+        """Claiming coverage-gap while the measurements show coverage
+        already meets the threshold must be rejected: the independent
+        re-derivation of category from measurements disagrees with the
+        evidence's own claimed failure_category."""
         ev = h.base_evidence(
-            "easy-unit-test", "coverage-gap",
-            {"coverage_percent": 90.0, "threshold_percent": 95.0},
+            "medium-low-coverage", "coverage-gap",
+            {"coverage_percent": 97.0, "threshold_percent": 95.0},
+            relevant_files=["src/job_processor.cpp", "tests/"],
         )
         result = classify_failure.classify(ev, self.policy)
         self.assertFalse(result["supported"])
-        self.assertIn("conflicts", result["reason"])
+        self.assertIn("not supported by its own measurements", result["reason"])
 
     def test_missing_required_measurement_is_unsupported(self):
         ev = h.base_evidence("easy-unit-test", "unit-test-failure", {})
@@ -87,15 +92,24 @@ class ClassifierTests(unittest.TestCase):
         self.assertFalse(result["supported"])
         self.assertIn("relevant_files", result["reason"])
 
-    def test_unknown_scenario_mapping_is_unsupported(self):
+    def test_scenario_field_does_not_affect_classification(self):
+        """`scenario` is provenance-only: classification must depend only
+        on failure_category and measurements, never on which fixture (if
+        any) produced the evidence."""
         ev = h.base_evidence(
             "easy-unit-test", "unit-test-failure",
             {"failing_tests": ["average_empty_input"]},
         )
-        ev["scenario"] = "medium-low-coverage"  # valid schema scenario, wrong category below
-        ev["failure_category"] = "unit-test-failure"
+        ev = h.resign({**ev, "scenario": "medium-low-coverage"})
+        result = classify_failure.classify(ev, self.policy)
+        self.assertTrue(result["supported"])
+        self.assertEqual(result["failure_category"], "unit-test-failure")
+
+    def test_reported_unsupported_category_is_unsupported(self):
+        ev = h.base_evidence("easy-unit-test", "unsupported", {})
         result = classify_failure.classify(ev, self.policy)
         self.assertFalse(result["supported"])
+        self.assertIn("reports failure_category 'unsupported'", result["reason"])
 
 
 if __name__ == "__main__":

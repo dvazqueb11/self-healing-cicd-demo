@@ -1,23 +1,34 @@
 # Deterministic self-heal policy.
 #
-# This file is read by scripts/evaluate_policy.py. It is intentionally
-# plain, readable configuration (no scripting) so policy decisions are
-# auditable without reading code.
+# This file is read by scripts/evaluate_policy.py (and, for the per-
+# category runtime budget and relevant-file hinting, by
+# scripts/collect_evidence.py). It is intentionally plain, readable
+# configuration (no scripting) so policy decisions are auditable
+# without reading code.
 #
-# The policy engine fails closed: if a scenario is missing, if evidence
+# This policy is category-driven: it describes what a remediation may
+# do for a given *failure category* measured on a real developer pull
+# request (unit-test-failure, coverage-gap, performance-regression), not
+# a fixed list of demo scenario ids. A real PR can touch any file; the
+# permitted/forbidden path prefixes below say what the remediation agent
+# may touch for the category it was invoked for, regardless of which
+# files the original developer PR happened to change.
+#
+# The policy engine fails closed: if a category is missing, if evidence
 # falls outside the declared limits, or if a proposed change touches a
 # forbidden path, remediation is denied and an escalation issue is
 # created instead of a pull request.
 
-schema_version: "1.0"
+schema_version: "2.0"
 
-# Paths that remediation may NEVER touch, regardless of scenario. The
+# Paths that remediation may NEVER touch, regardless of category. The
 # policy engine checks every changed file in a proposed patch against
-# this list before any scenario-specific rule is evaluated.
+# this list before any category-specific rule is evaluated.
 globally_forbidden_paths:
   - ".github/workflows/"
   - ".github/policies/"
   - "framework/policies/"
+  - "framework/"
   - "CMakeLists.txt"
   - "Makefile"
   - "benchmarks/performance_check.cpp"
@@ -29,64 +40,66 @@ globally_forbidden_paths:
   - "LICENSE"
   - ".gitignore"
   - "scripts/"
-  - "framework/"
 
-scenarios:
-  easy-unit-test:
-    allowed_failure_category: unit-test-failure
+categories:
+  unit-test-failure:
     permitted_paths:
-      - "src/job_processor.cpp"
-      - "include/job_processor.hpp"
+      - "src/"
+      - "include/"
     forbidden_paths:
       - "tests/"
       - "benchmarks/"
-    max_changed_files: 2
-    max_inserted_lines: 20
-    max_deleted_lines: 20
+    max_changed_files: 6
+    max_inserted_lines: 150
+    max_deleted_lines: 150
     required_validation_profile: unit-test-remediation
     runtime_budget_minutes: 10
     max_attempts: 1
 
-  medium-low-coverage:
-    allowed_failure_category: coverage-gap
+  coverage-gap:
     permitted_paths:
       - "tests/"
     forbidden_paths:
       - "src/"
       - "include/"
       - "benchmarks/"
-    max_changed_files: 3
-    max_inserted_lines: 60
-    max_deleted_lines: 10
+    max_changed_files: 4
+    max_inserted_lines: 120
+    max_deleted_lines: 20
     required_validation_profile: coverage-remediation
     runtime_budget_minutes: 10
     max_attempts: 1
 
-  advanced-performance:
-    allowed_failure_category: performance-regression
+  performance-regression:
     permitted_paths:
-      - "src/job_processor.cpp"
-      - "include/job_processor.hpp"
+      - "src/"
+      - "include/"
     forbidden_paths:
       - "tests/"
       - "benchmarks/"
-    max_changed_files: 2
-    max_inserted_lines: 40
-    max_deleted_lines: 40
+    max_changed_files: 6
+    max_inserted_lines: 150
+    max_deleted_lines: 150
     required_validation_profile: performance-remediation
     runtime_budget_minutes: 10
     max_attempts: 1
 
-# Conditions under which the policy engine abstains (denies remediation)
-# independent of scenario-specific rules. These are documented here for
-# auditability; they are enforced in scripts/evaluate_policy.py.
+# Loop-prevention configuration, enforced by scripts/check_remediation_guards.py
+# before any evidence is even downloaded. See docs/architecture.md for the
+# full guard sequence (fork / stale head / branch prefix / actor / duplicate).
+remediation_branch_prefix: "self-heal/"
+
 abstention_conditions:
-  - "evidence failed schema validation"
-  - "evidence failure_category does not match the scenario's allowed_failure_category"
-  - "attempt_number exceeds max_attempts for the scenario"
+  - "evidence failed schema validation or signature verification"
+  - "the failing workflow run was for a fork pull request (no same-repo PR association)"
+  - "the failing workflow run's head SHA does not match the pull request's current head SHA (stale)"
+  - "the pull request's head branch already starts with the remediation_branch_prefix (loop guard)"
+  - "an open remediation pull request already exists for this head SHA (duplicate guard)"
+  - "evidence failure_category is 'unsupported' or missing from categories"
+  - "attempt_number exceeds max_attempts for the category"
   - "a changed file matches a globally forbidden path"
-  - "a changed file matches a scenario-specific forbidden path"
-  - "a changed file is outside every permitted path for the scenario"
+  - "a changed file matches a category-specific forbidden path"
+  - "a changed file is outside every permitted path for the category"
   - "changed-file count exceeds max_changed_files"
-  - "inserted or deleted line count exceeds the scenario's limits"
+  - "inserted or deleted line count exceeds the category's limits"
   - "runtime_budget.elapsed_minutes exceeds runtime_budget_minutes"

@@ -7,13 +7,25 @@ schema; this module enforces the same constraints in plain Python so the
 framework has zero third-party dependencies. If the two ever disagree,
 the JSON schema file is documentation and this module is the enforced
 contract used by CI.
+
+Schema version 2.0: evidence is keyed by a real pull request (repository,
+PR number, base/head branch+SHA, workflow run id), not by a fixture
+scenario id. `scenario` is retained as an optional, nullable field purely
+for the provenance of the optional demo-fixture helper scripts; the
+classifier, policy engine, and validator never key any decision on it.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 from typing import Any, Dict, List
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "2.0"
 
+# Demo-fixture scenario ids. Only meaningful for the optional `scenario`
+# provenance field written by scripts/create_demo_failure.py /
+# scripts/demo_submit_pr.py; never used to drive a classification or
+# policy decision.
 SCENARIOS = {"easy-unit-test", "medium-low-coverage", "advanced-performance"}
 
 FAILURE_CATEGORIES = {
@@ -25,12 +37,14 @@ FAILURE_CATEGORIES = {
 
 REQUIRED_FIELDS = [
     "schema_version",
-    "scenario",
     "event_source",
     "repository",
-    "branch",
-    "triggering_sha",
-    "workflow_run",
+    "pr_number",
+    "base_branch",
+    "base_sha",
+    "head_branch",
+    "head_sha",
+    "workflow_run_id",
     "changed_files",
     "diff_file",
     "failure_category",
@@ -41,6 +55,7 @@ REQUIRED_FIELDS = [
     "measurements",
     "runtime_budget",
     "attempt_number",
+    "signature",
 ]
 
 # Evidence passed to the remediation agent must stay small and normalized.
@@ -48,6 +63,43 @@ REQUIRED_FIELDS = [
 MAX_CONCISE_LOG_CHARS = 4000
 MAX_DIFF_CHARS = 20000
 MAX_CHANGED_FILES = 50
+
+_SHA_HEX = "0123456789abcdef"
+
+
+def _is_sha(value: Any) -> bool:
+    return isinstance(value, str) and 7 <= len(value) <= 40 and all(c in _SHA_HEX for c in value)
+
+
+def canonical_signing_bytes(evidence: Dict[str, Any]) -> bytes:
+    """Deterministic byte representation of every field except
+    `signature` itself, used both to compute and to verify the
+    evidence's integrity signature."""
+    payload = {k: v for k, v in evidence.items() if k != "signature"}
+    return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def compute_signature(evidence: Dict[str, Any]) -> str:
+    """A sha256 digest over every other field, computed by the evidence
+    collector in the same trusted CI job that measured the failure.
+
+    This is tamper-evidence, not a cryptographic guarantee of authorship:
+    it detects accidental corruption/truncation of the artifact in
+    transit and any attempt to hand-edit evidence.json after collection
+    without also recomputing a matching signature. Combined with the
+    remediation workflow's independent checks against the GitHub API
+    (run belongs to this repository, was not a fork, conclusion was
+    failure, head SHA matches the live PR), this is sufficient for this
+    demo's documented threat model. See docs/architecture.md#known-limitations.
+    """
+    return hashlib.sha256(canonical_signing_bytes(evidence)).hexdigest()
+
+
+def verify_signature(evidence: Dict[str, Any]) -> bool:
+    signature = evidence.get("signature")
+    if not isinstance(signature, str):
+        return False
+    return signature == compute_signature(evidence)
 
 
 def validate_evidence(evidence: Dict[str, Any]) -> List[str]:
@@ -69,17 +121,20 @@ def validate_evidence(evidence: Dict[str, Any]) -> List[str]:
             f"(expected {SCHEMA_VERSION!r})"
         )
 
-    if evidence["scenario"] not in SCENARIOS:
-        errors.append(f"unknown scenario: {evidence['scenario']!r}")
+    scenario = evidence.get("scenario")
+    if scenario is not None and scenario not in SCENARIOS:
+        errors.append(f"unknown scenario: {scenario!r}")
 
     if evidence["failure_category"] not in FAILURE_CATEGORIES:
         errors.append(f"unknown failure_category: {evidence['failure_category']!r}")
 
-    sha = evidence["triggering_sha"]
-    if not isinstance(sha, str) or not (7 <= len(sha) <= 40) or not all(
-        c in "0123456789abcdef" for c in sha
-    ):
-        errors.append(f"invalid triggering_sha: {sha!r}")
+    if not isinstance(evidence["pr_number"], int) or evidence["pr_number"] < 1:
+        errors.append(f"invalid pr_number: {evidence['pr_number']!r}")
+
+    for sha_field in ("base_sha", "head_sha"):
+        value = evidence[sha_field]
+        if not _is_sha(value):
+            errors.append(f"invalid {sha_field}: {value!r}")
 
     if not isinstance(evidence["changed_files"], list):
         errors.append("changed_files must be a list")
@@ -102,5 +157,13 @@ def validate_evidence(evidence: Dict[str, Any]) -> List[str]:
     attempt = evidence["attempt_number"]
     if not isinstance(attempt, int) or attempt < 1:
         errors.append("attempt_number must be an integer >= 1")
+
+    signature = evidence["signature"]
+    if not isinstance(signature, str) or len(signature) != 64 or not all(
+        c in _SHA_HEX for c in signature
+    ):
+        errors.append("signature must be a 64-character hex sha256 digest")
+    elif not verify_signature(evidence):
+        errors.append("signature does not match the evidence content (tampered or corrupted)")
 
     return errors

@@ -10,14 +10,17 @@ import _helpers as h  # noqa: E402
 import evaluate_policy  # noqa: E402
 
 
-SUPPORTED_CLASSIFICATION = {
-    "supported": True,
-    "reason": "ok",
-}
+def supported(category: str) -> dict:
+    """A classification dict asserting support for the given category,
+    as scripts/classify_failure.py would produce for schema-valid,
+    internally-consistent evidence."""
+    return {"supported": True, "reason": "ok", "failure_category": category}
+
 
 UNSUPPORTED_CLASSIFICATION = {
     "supported": False,
     "reason": "classifier could not confirm the evidence",
+    "failure_category": "unsupported",
 }
 
 
@@ -29,7 +32,7 @@ class PolicyEngineTests(unittest.TestCase):
         ev = h.base_evidence("easy-unit-test", "unit-test-failure",
                               {"failing_tests": ["average_empty_input"]})
         decision = evaluate_policy.evaluate(
-            self.policy, SUPPORTED_CLASSIFICATION, ev,
+            self.policy, supported("unit-test-failure"), ev,
             ["src/job_processor.cpp"], inserted_lines=3, deleted_lines=0,
         )
         self.assertEqual(decision["decision"], "allow")
@@ -48,27 +51,51 @@ class PolicyEngineTests(unittest.TestCase):
         ev = h.base_evidence("easy-unit-test", "unit-test-failure",
                               {"failing_tests": ["average_empty_input"]})
         decision = evaluate_policy.evaluate(
-            self.policy, SUPPORTED_CLASSIFICATION, ev,
+            self.policy, supported("unit-test-failure"), ev,
             ["CMakeLists.txt"], inserted_lines=1, deleted_lines=1,
         )
         self.assertEqual(decision["decision"], "deny")
         self.assertTrue(any("globally forbidden" in r for r in decision["reasons"]))
 
-    def test_denies_scenario_forbidden_path(self):
+    def test_denies_category_forbidden_path(self):
+        """unit-test-failure remediation may touch src/include but not
+        tests/ (that would be weakening the very tests that caught the
+        bug, not fixing the production code)."""
         ev = h.base_evidence("easy-unit-test", "unit-test-failure",
                               {"failing_tests": ["average_empty_input"]})
         decision = evaluate_policy.evaluate(
-            self.policy, SUPPORTED_CLASSIFICATION, ev,
+            self.policy, supported("unit-test-failure"), ev,
             ["tests/job_processor_tests.cpp"], inserted_lines=1, deleted_lines=1,
         )
         self.assertEqual(decision["decision"], "deny")
-        self.assertTrue(any("scenario-forbidden" in r for r in decision["reasons"]))
+        self.assertTrue(any("category-forbidden" in r for r in decision["reasons"]))
+
+    def test_coverage_gap_permits_test_only_remediation(self):
+        """coverage-gap is the inverse of unit-test-failure: tests/ is
+        permitted, src/include is category-forbidden (test-only fix)."""
+        ev = h.base_evidence(
+            "medium-low-coverage", "coverage-gap",
+            {"coverage_percent": 93.88, "threshold_percent": 95.0},
+            relevant_files=["src/job_processor.cpp", "tests/"],
+        )
+        allow_decision = evaluate_policy.evaluate(
+            self.policy, supported("coverage-gap"), ev,
+            ["tests/job_processor_tests.cpp"], inserted_lines=20, deleted_lines=0,
+        )
+        self.assertEqual(allow_decision["decision"], "allow")
+
+        deny_decision = evaluate_policy.evaluate(
+            self.policy, supported("coverage-gap"), ev,
+            ["src/job_processor.cpp"], inserted_lines=20, deleted_lines=0,
+        )
+        self.assertEqual(deny_decision["decision"], "deny")
+        self.assertTrue(any("category-forbidden" in r for r in deny_decision["reasons"]))
 
     def test_denies_path_outside_permitted_scope(self):
         ev = h.base_evidence("easy-unit-test", "unit-test-failure",
                               {"failing_tests": ["average_empty_input"]})
         decision = evaluate_policy.evaluate(
-            self.policy, SUPPORTED_CLASSIFICATION, ev,
+            self.policy, supported("unit-test-failure"), ev,
             ["app/main.cpp"], inserted_lines=1, deleted_lines=1,
         )
         self.assertEqual(decision["decision"], "deny")
@@ -78,7 +105,7 @@ class PolicyEngineTests(unittest.TestCase):
         ev = h.base_evidence("easy-unit-test", "unit-test-failure",
                               {"failing_tests": ["average_empty_input"]})
         decision = evaluate_policy.evaluate(
-            self.policy, SUPPORTED_CLASSIFICATION, ev,
+            self.policy, supported("unit-test-failure"), ev,
             ["src/job_processor.cpp"], inserted_lines=500, deleted_lines=500,
         )
         self.assertEqual(decision["decision"], "deny")
@@ -89,8 +116,9 @@ class PolicyEngineTests(unittest.TestCase):
         ev = h.base_evidence("easy-unit-test", "unit-test-failure",
                               {"failing_tests": ["average_empty_input"]})
         decision = evaluate_policy.evaluate(
-            self.policy, SUPPORTED_CLASSIFICATION, ev,
-            ["src/job_processor.cpp", "include/job_processor.hpp", "app/main.cpp"],
+            self.policy, supported("unit-test-failure"), ev,
+            ["src/job_processor.cpp", "include/job_processor.hpp", "src/a.cpp",
+             "src/b.cpp", "src/c.cpp", "src/d.cpp", "src/e.cpp"],
             inserted_lines=3, deleted_lines=0,
         )
         self.assertEqual(decision["decision"], "deny")
@@ -100,18 +128,18 @@ class PolicyEngineTests(unittest.TestCase):
         ev = h.base_evidence("easy-unit-test", "unit-test-failure",
                               {"failing_tests": ["average_empty_input"]}, attempt_number=2)
         decision = evaluate_policy.evaluate(
-            self.policy, SUPPORTED_CLASSIFICATION, ev,
+            self.policy, supported("unit-test-failure"), ev,
             ["src/job_processor.cpp"], inserted_lines=3, deleted_lines=0,
         )
         self.assertEqual(decision["decision"], "deny")
         self.assertTrue(any("exceeds max_attempts" in r for r in decision["reasons"]))
 
-    def test_denies_category_mismatch(self):
+    def test_denies_classification_category_mismatch(self):
         ev = h.base_evidence("easy-unit-test", "coverage-gap",
                               {"coverage_percent": 90.0, "threshold_percent": 95.0})
         decision = evaluate_policy.evaluate(
-            self.policy, SUPPORTED_CLASSIFICATION, ev,
-            ["src/job_processor.cpp"], inserted_lines=3, deleted_lines=0,
+            self.policy, supported("unit-test-failure"), ev,
+            ["tests/job_processor_tests.cpp"], inserted_lines=3, deleted_lines=0,
         )
         self.assertEqual(decision["decision"], "deny")
         self.assertTrue(any("does not match" in r for r in decision["reasons"]))
@@ -119,23 +147,23 @@ class PolicyEngineTests(unittest.TestCase):
     def test_denies_runtime_budget_exceeded(self):
         ev = h.base_evidence("easy-unit-test", "unit-test-failure",
                               {"failing_tests": ["average_empty_input"]})
-        ev["runtime_budget"]["elapsed_minutes"] = 999
+        ev = h.resign({**ev, "runtime_budget": {"target_minutes": 10, "elapsed_minutes": 999}})
         decision = evaluate_policy.evaluate(
-            self.policy, SUPPORTED_CLASSIFICATION, ev,
+            self.policy, supported("unit-test-failure"), ev,
             ["src/job_processor.cpp"], inserted_lines=3, deleted_lines=0,
         )
         self.assertEqual(decision["decision"], "deny")
         self.assertTrue(any("exceeds budget" in r for r in decision["reasons"]))
 
-    def test_denies_unknown_scenario(self):
+    def test_denies_unknown_failure_category(self):
         ev = h.base_evidence("easy-unit-test", "unit-test-failure",
                               {"failing_tests": ["average_empty_input"]})
-        ev["scenario"] = "no-such-scenario"
+        ev = h.resign({**ev, "failure_category": "unsupported"})
         decision = evaluate_policy.evaluate(
-            self.policy, SUPPORTED_CLASSIFICATION, ev, [], 0, 0,
+            self.policy, UNSUPPORTED_CLASSIFICATION, ev, [], 0, 0,
         )
         self.assertEqual(decision["decision"], "deny")
-        self.assertTrue(any("no policy defined" in r for r in decision["reasons"]))
+        self.assertTrue(any("no policy defined" in r or "unsupported" in r for r in decision["reasons"]))
 
     def test_numstat_parsing(self):
         numstat = "3\t0\tsrc/job_processor.cpp\n1\t1\tinclude/job_processor.hpp\n"

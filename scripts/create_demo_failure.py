@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
-"""Apply one of this repository's auditable demo-failure fixtures.
+"""Apply one of this repository's auditable demo-failure fixtures to the
+local working tree, for quick manual experimentation only.
 
 Fixtures are plain unified diffs under fixtures/<scenario>/fixture.patch,
 reviewable like any other change. This script applies the named
 scenario's patch to the current working tree; it does not create
-branches or commits itself (the demo workflow / Makefile targets do
-that, so the exact sequence is auditable in one place).
+branches, commits, or pull requests itself.
+
+This is an optional developer convenience, separate from the live
+self-healing demo. The `self-heal-remediation` workflow never applies a
+fixture and never calls this script -- it only ever reacts to a real CI
+failure on a real pull request. To produce a real pull request that
+exercises the full remediation path end-to-end, use
+`scripts/demo_submit_pr.py <scenario>` instead, which creates a normal
+branch, commit, and pull request via the `gh` CLI.
 """
 from __future__ import annotations
 

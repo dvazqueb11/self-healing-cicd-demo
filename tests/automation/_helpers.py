@@ -28,17 +28,24 @@ def load_policy():
 def base_evidence(scenario: str, failure_category: str, measurements: dict,
                    relevant_files=None, attempt_number: int = 1) -> dict:
     """Build a minimal, schema-valid evidence document for a given
-    scenario/category, for use as a starting point in classifier and
-    policy-engine tests. Callers can mutate individual fields to
-    construct negative test cases."""
-    return {
+    demo scenario/category, for use as a starting point in classifier and
+    policy-engine tests. Callers can mutate individual fields (and must
+    call `resign(doc)` afterwards) to construct negative test cases.
+
+    `scenario` is purely provenance here (which fixture produced this
+    evidence in a test or demo run); classification and policy decisions
+    never depend on it."""
+    doc = {
         "schema_version": evidence_lib.SCHEMA_VERSION,
         "scenario": scenario,
         "event_source": "test-harness",
         "repository": "local/self-healing-cicd-demo",
-        "branch": f"demo/{scenario}/test-run",
-        "triggering_sha": "0" * 40,
-        "workflow_run": "test-run",
+        "pr_number": 1,
+        "base_branch": "main",
+        "base_sha": "1" * 40,
+        "head_branch": f"demo/{scenario}/test-run",
+        "head_sha": "0" * 40,
+        "workflow_run_id": "123456789",
         "changed_files": ["src/job_processor.cpp"],
         "diff_file": ".evidence/diff.patch",
         "failure_category": failure_category,
@@ -50,6 +57,17 @@ def base_evidence(scenario: str, failure_category: str, measurements: dict,
         "runtime_budget": {"target_minutes": 10, "elapsed_minutes": 1},
         "attempt_number": attempt_number,
     }
+    return resign(doc)
+
+
+def resign(doc: dict) -> dict:
+    """Recompute the tamper-evidence signature after mutating a test
+    evidence document, so it remains schema-valid unless the test is
+    deliberately constructing a signature-mismatch negative case."""
+    doc = dict(doc)
+    doc["signature"] = evidence_lib.compute_signature(doc)
+    return doc
+
 
 
 def clone(doc: dict) -> dict:
