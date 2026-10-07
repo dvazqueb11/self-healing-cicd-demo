@@ -57,10 +57,19 @@ jobs:
         run: |
           DIFF_AGAINST="origin/${{ github.event.pull_request.base.ref || 'main' }}"
           git fetch --depth=1 origin "${{ github.event.pull_request.base.ref || 'main' }}" 2>/dev/null || true
+          # Deliberately a single invocation, not a `||`-chained fallback
+          # to a plain-threshold-only re-run: measure_coverage.py already
+          # degrades gracefully on its own when --diff-against resolves to
+          # an unfetchable ref (git diff against a missing ref returns an
+          # empty, non-fatal diff, so changed-line coverage trivially
+          # passes with zero added lines -- see its own docstring). A
+          # shell-level `||` fallback here cannot distinguish that
+          # infra-only case from a *real* changed-line coverage violation
+          # (both make the first invocation's process exit non-zero), and
+          # silently discarding a real violation by falling back to the
+          # weaker check would defeat the whole changed-line coverage gate.
           python3 scripts/measure_coverage.py --build-dir build --threshold 95 \
-            --diff-against "$DIFF_AGAINST" --output build/coverage.json || \
-          python3 scripts/measure_coverage.py --build-dir build --threshold 95 \
-            --output build/coverage.json
+            --diff-against "$DIFF_AGAINST" --output build/coverage.json
           cat build/coverage.json
 
       - name: Run performance benchmark
