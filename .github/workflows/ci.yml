@@ -94,7 +94,7 @@ jobs:
 
       - name: Upload evidence artifact
         if: always() && github.event_name == 'pull_request' && hashFiles('.evidence/evidence.json') != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: self-heal-evidence
           path: .evidence/
