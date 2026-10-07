@@ -74,11 +74,14 @@ def classify(evidence: dict, policy: dict) -> dict:
 
     required_keys = REQUIRED_MEASUREMENT_KEYS.get(reported_category, set())
     measurements = evidence.get("measurements", {})
-    missing = sorted(required_keys - set(measurements.keys()))
+    missing = sorted(
+        key for key in required_keys
+        if measurements.get(key) is None
+    )
     if missing:
         return _unsupported(
             scenario,
-            f"measurements missing required keys for {reported_category!r}: {missing}",
+            f"measurements missing or null for required keys of {reported_category!r}: {missing}",
         )
 
     if not evidence.get("relevant_files"):

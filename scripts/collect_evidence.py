@@ -64,6 +64,12 @@ def collect_unit_test_evidence(build_dir: Path):
 
 
 def collect_coverage_evidence(build_dir: Path):
+    # Coverage data (.gcda) is only produced by actually exercising the
+    # instrumented binary, so the unit tests must run first. Their
+    # pass/fail status is irrelevant here: we only need the coverage
+    # percentage, which measure_coverage.py reports on below.
+    run(["ctest", "--output-on-failure"], cwd=build_dir)
+
     coverage_json_path = build_dir / "coverage.json"
     coverage_result = run([
         sys.executable, str(REPO_ROOT / "scripts" / "measure_coverage.py"),
