@@ -1,0 +1,9 @@
+{
+  "scenario": "advanced-performance",
+  "label": "self-heal/advanced",
+  "description": "Replaces the O(n) hash-map implementation of find_duplicates with a correct but intentionally inefficient O(n^2) nested-loop implementation. Correctness tests continue to pass, but the deterministic performance benchmark (benchmarks/performance_check.cpp) fails because median latency on the fixed 20,000-element input exceeds the 200ms threshold by roughly 2x, a conservative and noise-tolerant margin above the healthy implementation's ~4ms.",
+  "target_files": ["src/job_processor.cpp"],
+  "expected_failure_category": "performance-regression",
+  "performance_threshold_ms": 200.0,
+  "patch_file": "fixture.patch"
+}

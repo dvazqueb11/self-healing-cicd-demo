@@ -1,0 +1,9 @@
+{
+  "scenario": "easy-unit-test",
+  "label": "self-heal/easy",
+  "description": "Removes the empty-input guard in calculate_average, causing a 0.0/0.0 division. This is deterministic (IEEE 754 NaN, not undefined behavior), and makes exactly one focused unit test (average_empty_input) fail while every other test keeps passing.",
+  "target_files": ["src/job_processor.cpp"],
+  "expected_failure_category": "unit-test-failure",
+  "expected_failing_tests": ["average_empty_input"],
+  "patch_file": "fixture.patch"
+}

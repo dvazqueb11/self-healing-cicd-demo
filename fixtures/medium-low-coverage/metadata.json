@@ -1,0 +1,9 @@
+{
+  "scenario": "medium-low-coverage",
+  "label": "self-heal/medium",
+  "description": "Adds two deterministic, untested branches to summarize_job: a 'huge' size classification for jobs with 1000+ results, and a 'uniform=true' annotation when every value in the job is identical. Neither branch is exercised by the existing test suite, dropping line coverage of src/job_processor.cpp from 100% to below the 95% policy threshold.",
+  "target_files": ["src/job_processor.cpp"],
+  "expected_failure_category": "coverage-gap",
+  "coverage_threshold_percent": 95.0,
+  "patch_file": "fixture.patch"
+}
