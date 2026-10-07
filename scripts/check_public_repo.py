@@ -62,12 +62,25 @@ INTERNAL_REFERENCE_PATTERNS = [
 
 BINARY_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".ico", ".pdf", ".o", ".a", ".so", ".dylib"}
 
+# Files that intentionally contain fake secrets/emails/internal
+# references as negative-test fixtures for this very scanner (see
+# tests/automation/test_public_repo_scan.py). Excluding them by exact
+# path -- rather than weakening the detection patterns -- keeps the
+# scanner's real-world sensitivity unchanged.
+EXCLUDED_PATHS = {
+    "tests/automation/test_public_repo_scan.py",
+}
+
 
 def tracked_files():
     result = subprocess.run(
         ["git", "ls-files"], cwd=REPO_ROOT, capture_output=True, text=True, check=True
     )
-    return [REPO_ROOT / line for line in result.stdout.splitlines() if line.strip()]
+    return [
+        REPO_ROOT / line
+        for line in result.stdout.splitlines()
+        if line.strip() and line.strip() not in EXCLUDED_PATHS
+    ]
 
 
 def scan_file(path: Path):
