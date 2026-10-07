@@ -18,19 +18,35 @@ double calculate_average(const std::vector<double>& values) {
 }
 
 std::vector<int> find_duplicates(const std::vector<int>& values) {
-    // Efficient O(n) implementation: a single pass with a hash map tracking
-    // how many times each value has been seen. A value is reported exactly
-    // once, at the moment its *second* occurrence is observed, which gives
-    // deterministic output ordering.
-    std::unordered_map<int, int> seen_counts;
-    seen_counts.reserve(values.size());
-
+    // NOTE: this is an intentionally inefficient O(n^2) implementation
+    // used as a performance-regression fixture. It remains correct (and
+    // preserves the original deterministic "report on second occurrence"
+    // ordering) but does not scale: for each position it rescans all
+    // prior positions to check whether the current value has been seen
+    // before, and rescans the duplicates collected so far to avoid
+    // reporting the same value twice.
     std::vector<int> duplicates;
-    for (int value : values) {
-        int& count = seen_counts[value];
-        ++count;
-        if (count == 2) {
-            duplicates.push_back(value);
+    for (size_t i = 0; i < values.size(); ++i) {
+        bool already_reported = false;
+        for (size_t k = 0; k < duplicates.size(); ++k) {
+            if (duplicates[k] == values[i]) {
+                already_reported = true;
+                break;
+            }
+        }
+        if (already_reported) {
+            continue;
+        }
+
+        bool seen_before = false;
+        for (size_t j = 0; j < i; ++j) {
+            if (values[j] == values[i]) {
+                seen_before = true;
+                break;
+            }
+        }
+        if (seen_before) {
+            duplicates.push_back(values[i]);
         }
     }
     return duplicates;
