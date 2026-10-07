@@ -194,26 +194,56 @@ PROFILES = {
 }
 
 
+def _default_base_branch() -> str:
+    """Prefer the evidence's triggering_sha as the remediation base.
+
+    The fixture/failure commit is the correct diff base for patch-scope
+    checks (it is the state the remediation started from), not the
+    repository's overall "main" -- a scenario's fixture itself may
+    touch paths that are forbidden for remediation to re-touch, so
+    diffing against literal "main" would incorrectly blame the agent
+    for the fixture's own pre-existing change.
+    """
+    evidence_path = REPO_ROOT / ".evidence" / "evidence.json"
+    if evidence_path.exists():
+        try:
+            evidence = json.loads(evidence_path.read_text())
+            sha = evidence.get("triggering_sha")
+            if sha:
+                return sha
+        except (json.JSONDecodeError, OSError):
+            pass
+    return "main"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--profile", required=True, choices=sorted(PROFILES.keys()))
     parser.add_argument("--scenario", required=True)
-    parser.add_argument("--base-branch", default="main")
+    parser.add_argument(
+        "--base-branch", default=None,
+        help="Git ref to diff the remediation against. Defaults to the "
+             "triggering_sha recorded in .evidence/evidence.json (the "
+             "failure commit), falling back to 'main' if no evidence "
+             "is present.",
+    )
     parser.add_argument("--build-dir", default=REPO_ROOT / "build", type=Path)
     parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args()
+    base_branch = args.base_branch or _default_base_branch()
 
     result = {
         "schema_version": "1.0",
         "profile": args.profile,
         "scenario": args.scenario,
+        "base_branch": base_branch,
         "passed": False,
         "details": {},
         "error": None,
     }
 
     try:
-        details = PROFILES[args.profile](args.scenario, args.base_branch, args.build_dir)
+        details = PROFILES[args.profile](args.scenario, base_branch, args.build_dir)
         result["details"] = details
         result["passed"] = True
     except ValidationError as exc:
