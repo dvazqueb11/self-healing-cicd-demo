@@ -27,17 +27,21 @@
 
 namespace {
 
-// Fixed, deterministic synthetic input: a repeating pattern over a range of
-// values, large enough to make an O(n^2) implementation clearly observable,
-// while small enough to keep the healthy O(n) implementation well under a
-// second even on a modest runner.
+// Fixed, deterministic synthetic input: every value is unique. This is
+// deliberately the worst case for a naive "scan everything seen so far"
+// duplicate-detection approach (no duplicate is ever found early, so a
+// quadratic implementation must scan the full prefix for every element),
+// while the efficient hash-map based implementation stays linear
+// regardless of whether duplicates are present. Correctness with actual
+// duplicate values is covered separately by the unit tests in
+// tests/job_processor_tests.cpp; this benchmark exists only to measure
+// timing, not duplicate-detection correctness.
 std::vector<int> make_benchmark_input() {
     constexpr int kSize = 20000;
-    constexpr int kDistinctValues = 5000; // guarantees duplicates exist
     std::vector<int> values;
     values.reserve(kSize);
     for (int i = 0; i < kSize; ++i) {
-        values.push_back(i % kDistinctValues);
+        values.push_back(i);
     }
     return values;
 }

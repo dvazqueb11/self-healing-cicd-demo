@@ -1,0 +1,14 @@
+diff --git a/src/job_processor.cpp b/src/job_processor.cpp
+index 493ad28..1fad1dc 100644
+--- a/src/job_processor.cpp
++++ b/src/job_processor.cpp
+@@ -7,9 +7,6 @@
+ namespace job_processor {
+ 
+ double calculate_average(const std::vector<double>& values) {
+-    if (values.empty()) {
+-        return 0.0;
+-    }
+     double sum = 0.0;
+     for (double v : values) {
+         sum += v;

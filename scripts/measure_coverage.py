@@ -14,7 +14,7 @@ external coverage library). It:
      JSON report consumed by the policy engine and evidence collector.
 
 Usage:
-    scripts/measure_coverage.py --build-dir build --threshold 90 \
+    scripts/measure_coverage.py --build-dir build --threshold 95 \
         --output build/coverage.json
 """
 from __future__ import annotations
@@ -27,7 +27,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TARGET_SOURCE = "src/job_processor.cpp"
-DEFAULT_THRESHOLD = 90.0
+DEFAULT_THRESHOLD = 95.0
 
 
 def find_gcda(build_dir: Path) -> Path:
