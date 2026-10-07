@@ -67,12 +67,14 @@ steps:
     # failing commit should be checked out at all. The failing commit
     # itself is only checked out later, once guards have passed.
     uses: actions/checkout@v7
+    timeout-minutes: 2
     with:
       fetch-depth: 1
       persist-credentials: false
 
   - name: Evaluate loop-prevention guards (fork / stale head / branch / duplicate)
     id: guards
+    timeout-minutes: 2
     env:
       GH_TOKEN: ${{ github.token }}
     run: |
@@ -132,6 +134,7 @@ steps:
 
   - name: Stop here if guards denied (no AI invocation, no evidence download)
     if: steps.guards.outputs.decision == 'deny'
+    timeout-minutes: 1
     env:
       # gh-aw only auto-wires this env var into its own generated
       # steps; a user-defined deterministic step writing directly to
@@ -150,6 +153,7 @@ steps:
   - name: Checkout the exact failing commit
     if: steps.guards.outputs.decision == 'allow'
     uses: actions/checkout@v7
+    timeout-minutes: 3
     with:
       ref: ${{ github.event.workflow_run.head_sha }}
       fetch-depth: 0
@@ -157,12 +161,14 @@ steps:
 
   - name: Install build dependencies
     if: steps.guards.outputs.decision == 'allow'
+    timeout-minutes: 3
     run: |
       sudo apt-get update
       sudo apt-get install -y cmake g++ gcovr lcov
 
   - name: Download the CI run's evidence artifact
     id: evidence
+    timeout-minutes: 2
     if: steps.guards.outputs.decision == 'allow'
     env:
       GH_TOKEN: ${{ github.token }}
@@ -178,6 +184,7 @@ steps:
     # `rm -rf .evidence` before unpacking the downloaded artifact --
     # writing this file any earlier would have it silently wiped out.
     if: steps.guards.outputs.decision == 'allow'
+    timeout-minutes: 1
     run: |
       cat > .evidence/remediation-context.md <<EOF
       - Original pull request: #${{ steps.guards.outputs.pr_number }}
@@ -191,6 +198,7 @@ steps:
   - name: Verify evidence provenance against the live PR (anti-tamper)
     id: verify
     if: steps.guards.outputs.decision == 'allow'
+    timeout-minutes: 2
     run: |
       set -euo pipefail
       python3 - <<'PYEOF'
@@ -224,6 +232,7 @@ steps:
 
   - name: Stop here if evidence verification failed
     if: steps.guards.outputs.decision == 'allow' && steps.verify.outputs.decision == 'deny'
+    timeout-minutes: 1
     env:
       GH_AW_SAFE_OUTPUTS: ${{ steps.set-runtime-paths.outputs.GH_AW_SAFE_OUTPUTS }}
     run: |
@@ -236,6 +245,7 @@ steps:
 
   - name: Classify failure
     if: steps.guards.outputs.decision == 'allow' && steps.verify.outputs.decision == 'allow'
+    timeout-minutes: 1
     run: |
       set -euo pipefail
       python3 scripts/classify_failure.py \
@@ -245,6 +255,7 @@ steps:
   - name: Pre-check policy and skip the agent if denied
     id: policy
     if: steps.guards.outputs.decision == 'allow' && steps.verify.outputs.decision == 'allow'
+    timeout-minutes: 1
     env:
       GH_AW_SAFE_OUTPUTS: ${{ steps.set-runtime-paths.outputs.GH_AW_SAFE_OUTPUTS }}
     run: |
@@ -271,6 +282,7 @@ steps:
 
   - name: Post diagnosis and plan to the original pull request
     if: steps.guards.outputs.decision == 'allow' && steps.verify.outputs.decision == 'allow' && steps.policy.outputs.decision == 'allow'
+    timeout-minutes: 1
     env:
       GH_AW_SAFE_OUTPUTS: ${{ steps.set-runtime-paths.outputs.GH_AW_SAFE_OUTPUTS }}
     run: |
@@ -324,6 +336,7 @@ steps:
 
   - name: Show evidence, classification, and policy decision
     if: steps.guards.outputs.decision == 'allow' && steps.verify.outputs.decision == 'allow'
+    timeout-minutes: 1
     run: |
       echo "## .evidence/evidence.json"; cat .evidence/evidence.json
       echo "## .evidence/classification.json"; cat .evidence/classification.json || true
