@@ -69,4 +69,11 @@ TEST_CASE("summary_large_job") {
     values[0] = -3;
     values[1] = 42;
     REQUIRE(summarize_job(values) == "job(count=150, min=-3, max=42, size=large)");
+
+    std::vector<int> huge(1000, 5);
+    huge[0] = 1;
+    REQUIRE(summarize_job(huge) == "job(count=1000, min=1, max=5, size=huge)");
+
+    std::vector<int> uniform(3, 7);
+    REQUIRE(summarize_job(uniform) == "job(count=3, min=7, max=7, size=small, uniform=true)");
 }
