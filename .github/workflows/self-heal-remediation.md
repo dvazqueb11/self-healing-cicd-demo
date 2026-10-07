@@ -55,6 +55,22 @@ max-ai-credits: 300
 # No AI reasoning happens in any of these steps -- every one is the same
 # script a human could run locally via `make`.
 steps:
+  - name: Checkout trusted guard/policy scripts from the default branch
+    # Deliberately no `ref:` override. `workflow_run` always runs this
+    # workflow's own job steps using the repository's default branch
+    # content (a GitHub Actions platform guarantee specifically to
+    # prevent a malicious fork/PR from rewriting the workflow or its
+    # guard logic to grant itself elevated permissions), so a plain
+    # checkout here gives us a trusted copy of
+    # check_remediation_guards.py/evaluate_policy.py and the policy
+    # file *before* guards decide whether the potentially-untrusted
+    # failing commit should be checked out at all. The failing commit
+    # itself is only checked out later, once guards have passed.
+    uses: actions/checkout@v7
+    with:
+      fetch-depth: 1
+      persist-credentials: false
+
   - name: Evaluate loop-prevention guards (fork / stale head / branch / duplicate)
     id: guards
     env:
