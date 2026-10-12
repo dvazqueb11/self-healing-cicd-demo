@@ -50,12 +50,14 @@ make coverage     # 100% line coverage
 make benchmark    # well under the 200ms threshold
 
 # 2. Apply a fixture to the local working tree (pick one)
-make apply-easy        # or apply-medium / apply-advanced
+make apply-easy        # or apply-medium / apply-medium-autotest / apply-complex-perf / apply-advanced
 
 # 3. Observe the expected, classified failure
 make test          # easy-unit-test: one test now fails
 make coverage       # medium-low-coverage: coverage drops below 95%
-make benchmark      # advanced-performance: benchmark now exceeds 200ms
+                    # medium-auto-testcase-coverage: also drops below 95%
+make benchmark      # advanced-performance: runtime exceeds threshold
+                    # complex-performance-runtime-mem-cpu: runtime/CPU/RSS policy fails
 
 # 4. Run the same evidence/classify/policy pipeline a real CI + remediation
 #    run would produce, using the current commit as a stand-in head/base
@@ -80,8 +82,9 @@ git reset --soft HEAD~1   # undo the local test commit from step 5
 make reset SCENARIO=easy-unit-test
 ```
 
-Swap `easy-unit-test` for `medium-low-coverage` (profile
-`coverage-remediation`) or `advanced-performance` (profile
+Swap `easy-unit-test` for `medium-low-coverage` or
+`medium-auto-testcase-coverage` (profile `coverage-remediation`) or
+`advanced-performance` / `complex-performance-runtime-mem-cpu` (profile
 `performance-remediation`) to walk through the other two categories. Each
 fixture's `metadata.json` documents exactly what it changes and which
 deterministic check it is expected to trip.
@@ -95,12 +98,19 @@ deterministic check it is expected to trip.
    from a fixture via the `gh` CLI:
 
    ```sh
-   make demo-pr-easy        # or demo-pr-medium / demo-pr-advanced
+   make demo-pr-easy        # or demo-pr-medium / demo-pr-medium-autotest / demo-pr-complex-perf / demo-pr-advanced
    ```
 
    This is equivalent to writing a real bug by hand and opening a PR for it
    — the remediation workflow cannot tell the difference, and does not try
    to.
+
+   To showcase the "auto-generate testcase for low coverage" medium use
+   case specifically, use:
+
+   ```sh
+   make demo-pr-medium-autotest
+   ```
 3. Watch `ci.yml` run on the pull request. It configures and builds once,
    runs all three deterministic checks, and — because this PR is expected
    to fail — always collects and normalizes evidence and uploads it as a
@@ -138,6 +148,15 @@ deterministic check it is expected to trip.
 8. Clean up by closing the demo pull request and deleting its branch, or
    leave it as a reference — demo PRs don't need any special reset step
    since nothing was ever applied to `main` directly.
+
+## Retry behavior for flaky / intermittent CI stage failures
+
+The deterministic checks are now wrapped by `scripts/run_with_retry.py` in
+`ci.yml`. Unit tests, coverage measurement, and benchmark execution each get
+one automatic retry when a failure looks transient (for example temporary
+resource exhaustion), while deterministic failures still fail immediately and
+remain eligible for the normal evidence -> classify -> policy -> remediation
+flow.
 
 ## What "repeatable" means here
 

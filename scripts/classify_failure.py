@@ -69,7 +69,18 @@ def _category_is_consistent_with_measurements(category: str, measurements: dict)
         threshold = measurements.get("threshold_ms")
         if median is None or threshold is None:
             return False
-        return median > threshold
+        cpu = measurements.get("cpu_ms")
+        cpu_threshold = measurements.get("cpu_threshold_ms")
+        rss = measurements.get("peak_rss_kb")
+        rss_threshold = measurements.get("rss_threshold_kb")
+        runtime_failed = median > threshold
+        cpu_failed = (
+            cpu is not None and cpu_threshold is not None and cpu > cpu_threshold
+        )
+        rss_failed = (
+            rss is not None and rss_threshold is not None and rss > rss_threshold
+        )
+        return runtime_failed or cpu_failed or rss_failed
     return False
 
 

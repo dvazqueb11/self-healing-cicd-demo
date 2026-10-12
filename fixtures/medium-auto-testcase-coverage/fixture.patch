@@ -1,0 +1,23 @@
+diff --git a/src/job_processor.cpp b/src/job_processor.cpp
+--- a/src/job_processor.cpp
++++ b/src/job_processor.cpp
+@@ -56,6 +56,19 @@
+         size_class = "large";
+     }
+ 
++    const int spread = max_value - min_value;
++    std::string spread_band = "normal";
++    if (spread > 500) {
++        spread_band = "wide";
++        spread_band += "-range";
++    }
++
++    std::string sign_band = "nonnegative";
++    if (min_value < 0 && max_value < 0) {
++        sign_band = "all-negative";
++        sign_band += "-job";
++    }
++
+     out << "job(count=" << values.size()
+         << ", min=" << min_value
+         << ", max=" << max_value

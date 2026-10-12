@@ -33,7 +33,14 @@
     },
     "scenario": {
       "type": ["string", "null"],
-      "enum": ["easy-unit-test", "medium-low-coverage", "advanced-performance", null],
+      "enum": [
+        "easy-unit-test",
+        "medium-low-coverage",
+        "medium-auto-testcase-coverage",
+        "complex-performance-runtime-mem-cpu",
+        "advanced-performance",
+        null
+      ],
       "description": "Optional provenance only, set when evidence originated from an optional demo fixture (scripts/create_demo_failure.py / scripts/demo_submit_pr.py). Never read by the classifier, policy engine, or validator -- every decision is driven by failure_category and measurements."
     },
     "event_source": {

@@ -121,11 +121,22 @@ def collect_benchmark(build_dir: Path):
 
     median_ms = float(extract("median_ms")) if extract("median_ms") else None
     threshold_ms = float(extract("threshold_ms")) if extract("threshold_ms") else None
+    cpu_ms = float(extract("cpu_ms")) if extract("cpu_ms") else None
+    cpu_threshold_ms = float(extract("cpu_threshold_ms")) if extract("cpu_threshold_ms") else None
+    peak_rss_kb = float(extract("peak_rss_kb")) if extract("peak_rss_kb") else None
+    rss_threshold_kb = float(extract("rss_threshold_kb")) if extract("rss_threshold_kb") else None
     return {
         "passed": result.returncode == 0,
         "failed_command": "build/performance_check",
         "log_excerpt": truncate(stdout, evidence_lib.MAX_CONCISE_LOG_CHARS),
-        "measurements": {"median_ms": median_ms, "threshold_ms": threshold_ms},
+        "measurements": {
+            "median_ms": median_ms,
+            "threshold_ms": threshold_ms,
+            "cpu_ms": cpu_ms,
+            "cpu_threshold_ms": cpu_threshold_ms,
+            "peak_rss_kb": peak_rss_kb,
+            "rss_threshold_kb": rss_threshold_kb,
+        },
     }
 
 
