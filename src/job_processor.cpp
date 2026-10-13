@@ -52,15 +52,24 @@ std::string summarize_job(const std::vector<int>& values) {
         size_class = "small";
     } else if (values.size() < 100) {
         size_class = "medium";
-    } else {
+    } else if (values.size() < 1000) {
         size_class = "large";
+    } else {
+        size_class = "huge";
     }
+
+    bool all_same_value = std::all_of(
+        values.begin(), values.end(),
+        [&values](int v) { return v == values.front(); });
 
     out << "job(count=" << values.size()
         << ", min=" << min_value
         << ", max=" << max_value
-        << ", size=" << size_class
-        << ")";
+        << ", size=" << size_class;
+    if (all_same_value) {
+        out << ", uniform=true";
+    }
+    out << ")";
     return out.str();
 }
 
