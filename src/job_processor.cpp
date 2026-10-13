@@ -18,31 +18,17 @@ double calculate_average(const std::vector<double>& values) {
 }
 
 std::vector<int> find_duplicates(const std::vector<int>& values) {
-    // Intentionally inefficient variant for the complex performance fixture.
-    // It preserves correctness but regresses runtime/CPU (O(n^2) scan) and
-    // memory (large scratch allocation), to exercise multi-signal perf policy.
-    std::vector<int> duplicates;
-    std::vector<int> seen;
-    seen.reserve(values.size());
+    // O(n) single pass: report a value when its second occurrence is seen,
+    // which keeps output ordering deterministic.
+    std::unordered_map<int, int> seen_counts;
+    seen_counts.reserve(values.size());
 
+    std::vector<int> duplicates;
     for (int value : values) {
-        int occurrences = 0;
-        for (int existing : seen) {
-            if (existing == value) {
-                ++occurrences;
-            }
-        }
-        if (occurrences == 1) {
+        if (++seen_counts[value] == 2) {
             duplicates.push_back(value);
         }
-        seen.push_back(value);
     }
-
-    std::vector<int> memory_pressure(values.size() * 2048, 0);
-    if (!memory_pressure.empty()) {
-        memory_pressure[0] = static_cast<int>(duplicates.size());
-    }
-
     return duplicates;
 }
 
