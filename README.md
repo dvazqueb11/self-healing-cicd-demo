@@ -37,7 +37,7 @@ A small C++17 "engineering job processor" (`src/`, `include/`, `app/`) with
 benchmark on a healthy `main`. The pipeline is **category-driven**, not
 scenario-driven: any real developer change that trips one of three
 deterministic checks is detected, classified, and (if policy allows)
-remediated the same way. Three optional fixtures exist purely as repeatable
+remediated the same way. Five optional fixtures exist purely as repeatable
 demo helpers, each a plain git patch introducing exactly one classified
 defect:
 
@@ -45,6 +45,8 @@ defect:
 |---|---|---|---|
 | `easy-unit-test` | Removes an empty-input guard → one test fails | `unit-test-failure` | `src/`, `include/` |
 | `medium-low-coverage` | Adds two untested branches → coverage drops below 95% | `coverage-gap` | `tests/` (test-only remediation) |
+| `medium-auto-testcase-coverage` | Adds untested diagnostic branches while preserving current behavior → coverage drops below 95% | `coverage-gap` | `tests/` (test-only remediation) |
+| `complex-performance-runtime-mem-cpu` | Replaces linear duplicate detection with quadratic scan + large scratch allocation → benchmark fails runtime/CPU/RSS policy | `performance-regression` | `src/`, `include/` |
 | `advanced-performance` | Swaps an O(n) algorithm for O(n²) → benchmark exceeds 200ms | `performance-regression` | `src/`, `include/` |
 
 Full details, including exact expected test/measurement outcomes, are in
@@ -63,10 +65,12 @@ make automation-test            # Python test suite covering the framework itsel
 make public-check               # scan tracked files for secrets/internal references
 
 make apply-easy                 # introduce the easy-unit-test defect locally
+make apply-medium-autotest      # alternative coverage-gap fixture
+make apply-complex-perf         # complex runtime/memory/cpu perf regression fixture
 make test                       # watch it fail
 make reset SCENARIO=easy-unit-test   # back to a clean baseline
 
-make demo-pr-easy                # or demo-pr-medium / demo-pr-advanced:
+make demo-pr-easy                # or demo-pr-medium / demo-pr-medium-autotest / demo-pr-complex-perf / demo-pr-advanced:
                                   # opens a real branch + commit + pull request
                                   # so the full PR-driven demo can run end to end
 ```
@@ -75,6 +79,20 @@ See [`docs/demo-guide.md`](docs/demo-guide.md) for the full walkthrough,
 including how to trigger the real agentic workflow
 (`.github/workflows/self-heal-remediation.md`) and what to expect from each
 failure category.
+
+## Medium resilience cases added
+
+- **Retry flaky job stages / intermittent infra glitches:** CI now wraps
+  unit tests, coverage measurement, and benchmark execution with
+  `scripts/run_with_retry.py`, retrying once for transient infra-style
+  failures without masking deterministic product regressions.
+- **Auto-generate tests for low coverage:** `medium-auto-testcase-coverage`
+  adds untested production branches to trigger `coverage-gap`, showcasing
+  test-only remediation where the agent should extend tests rather than edit
+  production code.
+- **Complex performance failure (runtime + CPU + memory):**
+  `complex-performance-runtime-mem-cpu` triggers a deterministic
+  `performance-regression` using all three benchmark signals.
 
 ## Repository layout
 

@@ -1,0 +1,9 @@
+{
+  "scenario": "medium-auto-testcase-coverage",
+  "label": "self-heal/medium-autotest",
+  "description": "Adds deterministic but currently untested diagnostic branches in summarize_job (spread-band and all-negative annotations), keeping behavior for existing tests unchanged while dropping line coverage below the 95% policy threshold. This showcases the coverage-gap path where remediation should add/extend tests instead of changing production code.",
+  "target_files": ["src/job_processor.cpp"],
+  "expected_failure_category": "coverage-gap",
+  "coverage_threshold_percent": 95.0,
+  "patch_file": "fixture.patch"
+}

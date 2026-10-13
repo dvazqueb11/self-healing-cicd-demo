@@ -1,0 +1,45 @@
+diff --git a/src/job_processor.cpp b/src/job_processor.cpp
+--- a/src/job_processor.cpp
++++ b/src/job_processor.cpp
+@@ -18,21 +18,31 @@
+ }
+ 
+ std::vector<int> find_duplicates(const std::vector<int>& values) {
+-    // Efficient O(n) implementation: a single pass with a hash map tracking
+-    // how many times each value has been seen. A value is reported exactly
+-    // once, at the moment its *second* occurrence is observed, which gives
+-    // deterministic output ordering.
+-    std::unordered_map<int, int> seen_counts;
+-    seen_counts.reserve(values.size());
++    // Intentionally inefficient variant for the complex performance fixture.
++    // It preserves correctness but regresses runtime/CPU (O(n^2) scan) and
++    // memory (large scratch allocation), to exercise multi-signal perf policy.
++    std::vector<int> duplicates;
++    std::vector<int> seen;
++    seen.reserve(values.size());
+ 
+-    std::vector<int> duplicates;
+     for (int value : values) {
+-        int& count = seen_counts[value];
+-        ++count;
+-        if (count == 2) {
++        int occurrences = 0;
++        for (int existing : seen) {
++            if (existing == value) {
++                ++occurrences;
++            }
++        }
++        if (occurrences == 1) {
+             duplicates.push_back(value);
+         }
++        seen.push_back(value);
+     }
++
++    std::vector<int> memory_pressure(values.size() * 2048, 0);
++    if (!memory_pressure.empty()) {
++        memory_pressure[0] = static_cast<int>(duplicates.size());
++    }
++
+     return duplicates;
+ }
+ 

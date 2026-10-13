@@ -1,6 +1,6 @@
 # Extension Guide
 
-## Adding a fourth demo fixture
+## Adding another demo fixture
 
 Policy and classification in this repository are **category-driven**
 (`unit-test-failure` / `coverage-gap` / `performance-regression`), not
@@ -24,7 +24,7 @@ never touches the shared framework, only `fixtures/`:
 
    Write `fixtures/<new-scenario>/metadata.json` describing the scenario id,
    the expected failure category, and a one-line human description. Follow
-   the shape of the three existing `metadata.json` files exactly, and add
+   the shape of the existing `metadata.json` files exactly, and add
    the new scenario id to `KNOWN_SCENARIOS` in
    `scripts/create_demo_failure.py`, `scripts/reset_demo.py`,
    `scripts/demo_submit_pr.py`, and to `SCENARIOS` in

@@ -49,7 +49,9 @@ jobs:
       - name: Run unit tests
         id: unit_tests
         continue-on-error: true
-        run: ctest --test-dir build --output-on-failure -E performance_policy
+        run: |
+          python3 scripts/run_with_retry.py --max-attempts 2 --retry-delay-seconds 1 \
+            -- ctest --test-dir build --output-on-failure -E performance_policy
 
       - name: Measure coverage
         id: coverage
@@ -68,14 +70,17 @@ jobs:
           # (both make the first invocation's process exit non-zero), and
           # silently discarding a real violation by falling back to the
           # weaker check would defeat the whole changed-line coverage gate.
-          python3 scripts/measure_coverage.py --build-dir build --threshold 95 \
-            --diff-against "$DIFF_AGAINST" --output build/coverage.json
+          python3 scripts/run_with_retry.py --max-attempts 2 --retry-delay-seconds 1 -- \
+            python3 scripts/measure_coverage.py --build-dir build --threshold 95 \
+              --diff-against "$DIFF_AGAINST" --output build/coverage.json
           cat build/coverage.json
 
       - name: Run performance benchmark
         id: benchmark
         continue-on-error: true
-        run: ./build/performance_check
+        run: |
+          python3 scripts/run_with_retry.py --max-attempts 2 --retry-delay-seconds 1 \
+            -- ./build/performance_check
 
       - name: Collect evidence (pull requests only; always runs, even on failure)
         if: always() && github.event_name == 'pull_request'

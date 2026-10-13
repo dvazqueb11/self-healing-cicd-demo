@@ -16,6 +16,8 @@ request, regardless of how that failure was introduced.
 Usage:
     python3 scripts/demo_submit_pr.py easy-unit-test
     python3 scripts/demo_submit_pr.py medium-low-coverage --base main
+    python3 scripts/demo_submit_pr.py medium-auto-testcase-coverage
+    python3 scripts/demo_submit_pr.py complex-performance-runtime-mem-cpu
     python3 scripts/demo_submit_pr.py advanced-performance --no-push
 
 Requires a clean working tree, the `gh` CLI authenticated against this
@@ -33,7 +35,13 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 FIXTURES_DIR = REPO_ROOT / "fixtures"
 
-KNOWN_SCENARIOS = ["easy-unit-test", "medium-low-coverage", "advanced-performance"]
+KNOWN_SCENARIOS = [
+    "easy-unit-test",
+    "medium-low-coverage",
+    "medium-auto-testcase-coverage",
+    "complex-performance-runtime-mem-cpu",
+    "advanced-performance",
+]
 
 
 def run(cmd: list[str], **kwargs) -> subprocess.CompletedProcess:

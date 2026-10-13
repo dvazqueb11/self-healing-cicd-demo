@@ -26,7 +26,13 @@ SCHEMA_VERSION = "2.0"
 # provenance field written by scripts/create_demo_failure.py /
 # scripts/demo_submit_pr.py; never used to drive a classification or
 # policy decision.
-SCENARIOS = {"easy-unit-test", "medium-low-coverage", "advanced-performance"}
+SCENARIOS = {
+    "easy-unit-test",
+    "medium-low-coverage",
+    "medium-auto-testcase-coverage",
+    "complex-performance-runtime-mem-cpu",
+    "advanced-performance",
+}
 
 FAILURE_CATEGORIES = {
     "unit-test-failure",

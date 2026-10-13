@@ -21,7 +21,13 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 FIXTURES_DIR = REPO_ROOT / "fixtures"
 EVIDENCE_DIR = REPO_ROOT / ".evidence"
 
-KNOWN_SCENARIOS = ["easy-unit-test", "medium-low-coverage", "advanced-performance"]
+KNOWN_SCENARIOS = [
+    "easy-unit-test",
+    "medium-low-coverage",
+    "medium-auto-testcase-coverage",
+    "complex-performance-runtime-mem-cpu",
+    "advanced-performance",
+]
 
 
 def main() -> int:

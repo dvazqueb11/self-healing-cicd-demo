@@ -1,0 +1,9 @@
+{
+  "scenario": "complex-performance-runtime-mem-cpu",
+  "label": "self-heal/complex-perf",
+  "description": "Introduces a deterministic resource regression in find_duplicates: replaces the linear hash-map path with a quadratic nested scan and allocates a large scratch buffer per call. Correctness remains intact for unit tests, but benchmark policy fails on runtime, CPU, and RSS thresholds.",
+  "target_files": ["src/job_processor.cpp"],
+  "expected_failure_category": "performance-regression",
+  "performance_signals": ["median_ms", "cpu_ms", "peak_rss_kb"],
+  "patch_file": "fixture.patch"
+}

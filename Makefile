@@ -1,7 +1,7 @@
 .PHONY: configure build test coverage benchmark automation-test public-check \
         validate-easy validate-medium validate-advanced \
-        apply-easy apply-medium apply-advanced reset clean help \
-        demo-pr-easy demo-pr-medium demo-pr-advanced
+        apply-easy apply-medium apply-medium-autotest apply-complex-perf apply-advanced reset clean help \
+        demo-pr-easy demo-pr-medium demo-pr-medium-autotest demo-pr-complex-perf demo-pr-advanced
 
 BUILD_DIR ?= build
 
@@ -16,10 +16,14 @@ help:
 	@echo "  public-check       Scan tracked files for secrets/internal references"
 	@echo "  apply-easy         Apply the easy-unit-test demo fixture to the local working tree"
 	@echo "  apply-medium       Apply the medium-low-coverage demo fixture to the local working tree"
+	@echo "  apply-medium-autotest  Apply the medium-auto-testcase-coverage fixture to the local working tree"
+	@echo "  apply-complex-perf  Apply the complex performance runtime/mem/cpu fixture"
 	@echo "  apply-advanced     Apply the advanced-performance demo fixture to the local working tree"
 	@echo "  reset SCENARIO=<id>  Revert the named fixture and clear .evidence/"
 	@echo "  demo-pr-easy       Open a real demo pull request from the easy-unit-test fixture"
 	@echo "  demo-pr-medium     Open a real demo pull request from the medium-low-coverage fixture"
+	@echo "  demo-pr-medium-autotest  Open a demo PR from medium-auto-testcase-coverage"
+	@echo "  demo-pr-complex-perf  Open a demo PR from complex-performance-runtime-mem-cpu"
 	@echo "  demo-pr-advanced   Open a real demo pull request from the advanced-performance fixture"
 	@echo "  validate-easy      Run the unit-test-remediation validator profile against .evidence/"
 	@echo "  validate-medium    Run the coverage-remediation validator profile against .evidence/"
@@ -59,6 +63,12 @@ apply-easy:
 apply-medium:
 	python3 scripts/create_demo_failure.py medium-low-coverage
 
+apply-medium-autotest:
+	python3 scripts/create_demo_failure.py medium-auto-testcase-coverage
+
+apply-complex-perf:
+	python3 scripts/create_demo_failure.py complex-performance-runtime-mem-cpu
+
 apply-advanced:
 	python3 scripts/create_demo_failure.py advanced-performance
 
@@ -73,6 +83,12 @@ demo-pr-easy:
 
 demo-pr-medium:
 	python3 scripts/demo_submit_pr.py medium-low-coverage
+
+demo-pr-medium-autotest:
+	python3 scripts/demo_submit_pr.py medium-auto-testcase-coverage
+
+demo-pr-complex-perf:
+	python3 scripts/demo_submit_pr.py complex-performance-runtime-mem-cpu
 
 demo-pr-advanced:
 	python3 scripts/demo_submit_pr.py advanced-performance
@@ -91,4 +107,3 @@ validate-advanced:
 
 clean:
 	rm -rf $(BUILD_DIR)
-
